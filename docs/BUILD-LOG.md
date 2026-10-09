@@ -31,3 +31,8 @@
   xml/drawable, array/icon_pack, drawable/com_whatsapp; assets/appfilter.xml maps com.whatsapp/com.whatsapp.Main; the 235781-byte
   PNG in the APK is byte-identical in size to icons/com_whatsapp.png.
 - Bridge calls take ~45–60 s each here (not 4–6 min), so a request is ~2 min for 2 variants.
+- Review page checked at phone width (Pixel 7 preset, 412px) on a throwaway copy of the data with WhatsApp set back to
+  drafted: original + two large variants with Approve/Note, circle/squircle/square row at 48px (no frame), Regenerate…/Skip,
+  earlier rounds collapsed, CI + latest release in the header. Fix: /api/review blocked ~3 s on `gh` for CI status; it now
+  returns the cached value and refreshes in the background (5 ms).
+- Not tested: on a real phone (the APK has never been installed; Compose UI and Nova adaptive-icon masking verified only by build + resource dump).

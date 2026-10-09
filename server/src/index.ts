@@ -265,6 +265,7 @@ async function publish() {
       db.query("UPDATE publishes SET status='pushed', sha=? WHERE id=?").run(sha, pub.id);
     })();
     log("published", sha, names);
+    ciCache.at = 0;
     return { sha, count: apps.length };
   } catch (e) {
     db.query("UPDATE publishes SET status='failed', error=? WHERE id=?").run(String(e), pub.id);
@@ -276,8 +277,16 @@ async function publish() {
 }
 
 let ciCache: { at: number; data: unknown } = { at: 0, data: null };
-async function ciStatus() {
-  if (Date.now() - ciCache.at < 20_000) return ciCache.data;
+let ciRefreshing = false;
+// Never blocks a request: returns the cached value and refreshes in the background (gh takes ~2-3 s).
+function ciStatus() {
+  if (Date.now() - ciCache.at > 20_000 && !ciRefreshing) {
+    ciRefreshing = true;
+    refreshCi().finally(() => (ciRefreshing = false));
+  }
+  return ciCache.data;
+}
+async function refreshCi() {
   try {
     const p = Bun.spawn(
       ["gh", "run", "list", "--repo", GH_REPO, "--branch", "main", "--limit", "5", "--json", "databaseId,headSha,status,conclusion,url,createdAt,displayTitle"],
@@ -293,7 +302,6 @@ async function ciStatus() {
   } catch (e) {
     ciCache = { at: Date.now(), data: { error: String(e) } };
   }
-  return ciCache.data;
 }
 
 // ---------- http ----------
@@ -387,7 +395,7 @@ app.get("/api/review", async (c) => {
     })),
     pending: { apps: pa.length, components: pc.length },
     publishes: pubs,
-    ci: await ciStatus(),
+    ci: ciStatus(),
   });
 });
 
@@ -447,5 +455,6 @@ app.get("/img/:kind/:file", (c) => {
 app.get("/", (c) => c.html(reviewPage()));
 
 workerLoop();
+refreshCi();
 log(`kudmascot listening on http://${HOST}:${PORT}`);
 export default { port: PORT, hostname: HOST, fetch: app.fetch, idleTimeout: 120 };
