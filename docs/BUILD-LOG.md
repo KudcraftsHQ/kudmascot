@@ -36,3 +36,35 @@
   earlier rounds collapsed, CI + latest release in the header. Fix: /api/review blocked ~3 s on `gh` for CI status; it now
   returns the cached value and refreshes in the background (5 ms).
 - Not tested: on a real phone (the APK has never been installed; Compose UI and Nova adaptive-icon masking verified only by build + resource dump).
+
+## 2026-10-09 — macOS menu-bar app
+- DB backed up before migrating (`~/.local/share/kudmascot/backups/kudmascot-pre-mac-*.sqlite`, VACUUM INTO), then
+  migrated in place by additive `ALTER TABLE` on service start: `components.platform` (default android),
+  `apps.platform`, `apps.suggest`, `apps.suggest_reason`, `apps.merged_into`. Row counts identical before/after
+  (261 apps: 17 published + 244 requested, 261 components, 29 variants, 2 publishes); `/api/status` response
+  byte-identical (md5) before and after; an Android re-request of `com.whatsapp` still dedupes (`created:false`).
+- Mac apps are components `mac:<bundleId>`. New drawings for Mac-only apps are `mac_<bundle>`. Publish and
+  `/api/status` filter to Android components, so the APK never sees Mac data; Mac-only drawings stay `approved`.
+- Match suggestions (`server/src/match.ts`): known-pairs table first, then normalised name. Never auto-merged.
+  "Use same drawing" moves the request's components onto the drawing and marks the request row `merged`
+  (`merged_into`; kept, not deleted, and later requests follow the link).
+- `style/macos.py`: superellipse n=5 body (824 of 1024; within a pixel of Apple's r≈185 corner), shadow alpha 72,
+  dy 1.2%, blur 2% — ntfy-bar's values. The server mutes the raw generation for the 824 px body; the
+  version hash covers the art plus macos.py, so a shape change makes every Mac re-apply. Review previews are 256 px.
+- Bug found while checking the page: `/img/macv/:id` was shadowed by `/img/:kind/:file` (404). Moved it first.
+- Live end-to-end: a fake Mac request for `com.google.Chrome` got the suggestion "known pair (Chrome)" →
+  `com_android_chrome` (already published, not a draft as the brief assumed); tapped **Use same drawing** on the
+  review page (Pixel 7 width); `/api/mac/icons` returned it at once, `/api/mac/icon/com_android_chrome.png` is a
+  1024 RGBA PNG, transparent outside, in ntfy-bar's grid. Pending Android publish stayed 0. No image generation.
+- Phone-width check on a throwaway copy of the data: Android rows, a Mac-only row and suggestion rows in both
+  directions (Mac→Android known pair, Android→Mac-only by name); platform tags; Approved shows the Mac preview.
+- Mac app (`macos/`, SwiftPM, macOS 13+, Sparkle 2.10.0, universal arm64+x86_64). First CI run failed: core type
+  `State` clashed with SwiftUI's `@State`; renamed `SavedState`. Second run green: 3 XCTests (applies an icon to a
+  dummy .app through IconApplier and asserts the `Icon\r` file + FinderInfo custom-icon bit, restore clears it;
+  batch failure reporting; scanner), smoke test of the built binary's `--apply-icon` / `--apply-icons` (the admin
+  path), Sparkle signature verified against `SUPublicEDKey`. Release `mac-v1.0.2` (pre-release, `--latest=false`)
+  + rolling `mac-appcast` feed. `releases/latest` (gh and public API) still `v1.0.4` (Android).
+- Sparkle key: Ed25519 generated with python `cryptography` (generate_keys is macOS-only), 32-byte seed base64;
+  `sign_update --ed-key-file -` accepted it. Backup `~/.config/kudmascot/sparkle_ed25519_private.key`.
+- Not tested: the app has never run on a real Mac (menu UI, setIcon on root-owned/App Store apps, the admin
+  password prompt, App Management, FSEvents re-apply after an update, Sparkle updating an installed copy).
