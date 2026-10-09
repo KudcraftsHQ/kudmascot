@@ -87,8 +87,9 @@ if [[ ${#refs[@]} -gt 0 ]]; then
   ref_line="
 REFERENCE IMAGES: ${names[*]} — attached to this prompt and also present in your working directory.
 Pass them to image_generation as input images, but ONLY as guides: ref1 shows the drawing STYLE
-(several example icons — never copy their subjects, layout or circles), ref2 is the real app icon whose
-object/glyph and brand colour the new icon must be recognisable as, and ref3 (if present) is an earlier
+(several example icons — never copy their subjects, layout or circles), ref2 shows the COMPOSITION
+(tilted cream body cut off by the canvas edges, small low face), ref3 is the real app icon whose
+object/glyph and brand colour the new icon must be recognisable as, and ref4 (if present) is an earlier
 draft that the reviewer note is about. The output is ONE single new square icon filling the canvas edge
 to edge. Never composite, tile, collage or arrange the reference images; never draw several icons."
 fi

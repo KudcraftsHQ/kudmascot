@@ -22,7 +22,7 @@ const BRIDGE = process.env.KUDMASCOT_BRIDGE ?? join(ROOT, "server/bin/gpt-image-
 const GEN_TIMEOUT_MS = Number(process.env.KUDMASCOT_GEN_TIMEOUT_MS ?? 15 * 60_000);
 const VARIANTS = [
   "Lean the object to the right (clockwise), cropped by the bottom and right edges.",
-  "Lean the object to the left (counter-clockwise), cropped by the bottom and left edges.",
+  "Mirror the usual layout: lean the object to the LEFT (counter-clockwise), with its body running off the bottom and LEFT edges and the open background at the top-right.",
 ];
 
 if (!TOKEN) {
@@ -105,7 +105,7 @@ function promptFor(app: App, variantIdx: number) {
   const m = md.match(/<!-- prompt:start -->([\s\S]*?)<!-- prompt:end -->/);
   if (!m) throw new Error("style/prompt.md has no prompt block");
   const note = app.note
-    ? `REVIEWER NOTE (most important — the THIRD reference image is the draft this note is about; fix exactly this): ${app.note}`
+    ? `REVIEWER NOTE (most important — the FOURTH reference image is the draft this note is about; fix exactly this): ${app.note}`
     : "";
   return m[1]
     .replaceAll("{{LABEL}}", app.label)
@@ -130,7 +130,7 @@ async function run(cmd: string[], logFile: string, timeoutMs: number) {
 async function generate(app: App) {
   const round = app.round + 1;
   const jobLog = join(STATE, "jobs", `${app.drawable}-r${round}.log`);
-  const refs = ["--ref", join(ROOT, "style/refs/family-clean.png")];
+  const refs = ["--ref", join(ROOT, "style/refs/family-clean.png"), "--ref", join(ROOT, "style/refs/ntfy-D2.png")];
   if (app.original) refs.push("--ref", join(DATA, "originals", app.original));
   if (app.note && app.note_variant) {
     const v = db.query("SELECT * FROM variants WHERE id = ?").get(app.note_variant) as Variant | null;

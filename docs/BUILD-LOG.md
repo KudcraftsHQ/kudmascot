@@ -22,3 +22,12 @@
 - Round 3: v1 recognisable and in-family (cream speech bubble, green glyph, dusty green bg ~60% cover) but upright, uncropped, face high;
   v2 copied the dark frame from my screenshot crop. Prompt: solid cream body (never a ring), ignore the original's container/background,
   visibly tilted + bottom runs off the edge, no dark bg unless brand is black, face below centre and below the glyph.
+- Round 4: tilt/crop still ignored, one variant drew an outline ring. Added `style/refs/ntfy-D2.png` as a COMPOSITION reference
+  (ref order now: family-clean, ntfy-D2, original, [reviewed draft]); "no outline/stroke/ring".
+- Round 5: in-family (tilted, edge-cropped, face low, ~60% cream) but no cheeks, variants near-identical. Made cheeks explicitly
+  required; variant B wording is a strong mirror (the model still keeps WhatsApp's tail bottom-left; acceptable).
+- Round 6 v2 approved (cheeks, small low face, tilt, crop, green clearly visible). Published via `POST /api/publish` →
+  commit d298c65 by the server checkout → CI run 37876200151 green → Release v1.0.3. `aapt2 dump` in CI shows xml/appfilter,
+  xml/drawable, array/icon_pack, drawable/com_whatsapp; assets/appfilter.xml maps com.whatsapp/com.whatsapp.Main; the 235781-byte
+  PNG in the APK is byte-identical in size to icons/com_whatsapp.png.
+- Bridge calls take ~45–60 s each here (not 4–6 min), so a request is ~2 min for 2 variants.
