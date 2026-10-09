@@ -46,11 +46,7 @@ Releases are tagged `v1.0.<run number>` (versionCode = run number) with one asse
 `SHA256SUMS`. This is the same scheme as ntfy Kudcrafts.
 
 1. In Obtainium, choose **Add app** and enter `https://github.com/KudcraftsHQ/kudmascot`.
-2. **The repo is private, so Obtainium needs a GitHub token.** Create a fine-grained PAT at
-   github.com → Settings → Developer settings → Fine-grained tokens, with resource owner `KudcraftsHQ`, repository
-   access limited to `kudmascot`, and permission **Contents: Read-only**. In Obtainium go to Settings → Source-specific → GitHub
-   and paste it in "GitHub Personal Access Token". (If the repo is ever made public, skip this step, as with
-   ntfy-android.)
+2. The repo is public, so no GitHub token is needed — same as ntfy Kudcrafts.
 3. Install. Then in Nova go to Settings → Look & feel → Icon style → Icon theme → **kudmascot**, or tap **Apply in Nova** in the app.
 4. **After an update, re-apply the pack in Nova if icons don't refresh.**
 
