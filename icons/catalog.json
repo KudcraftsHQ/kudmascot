@@ -1,3 +1,12 @@
 {
-  "icons": []
+  "icons": [
+    {
+      "drawable": "com_whatsapp",
+      "label": "WhatsApp",
+      "components": [
+        "com.whatsapp/com.whatsapp.Main"
+      ],
+      "added": "2026-10-09"
+    }
+  ]
 }
