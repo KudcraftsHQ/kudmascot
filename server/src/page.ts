@@ -96,7 +96,7 @@ function draftCard(a){
     h+='<div class="strip"><span></span>'+SHAPES.map(k=>'<span class="lbl" style="justify-self:center">'+k+'</span>').join('')+
       (a.original?'<span class="lbl">original</span><span></span>'+frame(orig(a))+'<span></span>':'')+
       latest.map(v=>shapes('#'+v.idx,img(v.png))).join('')+'</div>';
-  } else if(busy){h+='<div class="empty">'+(a.status==='generating'?'Generating 2 variants (about 10 min)…':'Queued')+'</div>'}
+  } else if(busy){h+='<div class="empty">'+(a.status==='generating'?(a.note?'Redrawing alone, 2 variants (about 10 min)…':'Drawing in a batch grid (about 5 min)…'):(a.note?'Queued for a redraw':'Queued. Batches start 45 s after your last Generate tap, up to 9 apps per grid'))+'</div>'}
   if(a.status==='queued')h+='<div class="foot"><button class="ghost" onclick="unqueue(\\''+a.drawable+'\\')">Cancel</button></div>';
   if(a.status==='queued'&&a.note)h+='<div class="err" style="color:var(--muted)">Note: '+esc(a.note)+'</div>';
   if(a.error)h+='<div class="err">'+esc(a.error.slice(0,300))+'</div>';
@@ -146,7 +146,7 @@ async function approve(d,v){try{await api('/api/apps/'+d+'/approve',{variant:v})
 function noteFor(d,v){openNote[d]=v;render();const t=document.getElementById('n-'+d);t&&t.focus()}
 function closeNote(d){delete openNote[d];render()}
 async function regen(d){const note=document.getElementById('n-'+d).value;try{await api('/api/apps/'+d+'/regenerate',{note,variant:openNote[d]||undefined});delete openNote[d];toast('Queued for regeneration');load()}catch(e){toast(e.message)}}
-async function queue(d,hint){try{await api('/api/apps/'+d+'/queue',{hint});toast('Queued. It will appear under Review');load()}catch(e){toast(e.message)}}
+async function queue(d,hint){try{await api('/api/apps/'+d+'/queue',{hint});toast('Queued. Tap more within 45 s to batch them together');load()}catch(e){toast(e.message)}}
 function queueHint(d){const h=prompt('Hint for the drawing (e.g. "the object is a red gift box")');if(h!==null)queue(d,h)}
 async function unqueue(d){try{await api('/api/apps/'+d+'/unqueue',{});load()}catch(e){toast(e.message)}}
 async function skip(d){if(!confirm('Skip this app?'))return;try{await api('/api/apps/'+d+'/skip',{});load()}catch(e){toast(e.message)}}

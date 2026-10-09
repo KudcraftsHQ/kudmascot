@@ -74,7 +74,7 @@ API (bearer token): `POST /api/requests {requests:[{package,activity,label,icon(
 `POST /api/publish`.
 
 Requests dedupe by component (`pkg/activity`). Every activity of a package shares one drawable (`com.whatsapp` →
-`com_whatsapp`). Phone requests only land in the review page's **Inbox**; nothing is generated until you press **Generate** there (status `requested` → `queued`). The worker makes 2 variants per queued app, one at a time (each bridge call uses ChatGPT quota).
+`com_whatsapp`). Phone requests only land in the review page's **Inbox**; nothing is generated until you press **Generate** there (status `requested` → `queued`). Queued apps are drawn in batches: up to 9 per image call as one grid (`style/grid.py`), one draft each, starting 45 s after the last Generate tap. Regenerating with a note redraws that app alone with 2 variants (each bridge call uses ChatGPT quota).
 
 ## Secrets: where they live
 

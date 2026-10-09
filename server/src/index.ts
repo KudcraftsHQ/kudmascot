@@ -20,6 +20,9 @@ const GH_REPO = process.env.KUDMASCOT_GH_REPO ?? "KudcraftsHQ/kudmascot";
 const REMOTE = process.env.KUDMASCOT_REMOTE ?? `git@github.com:${GH_REPO}.git`;
 const BRIDGE = process.env.KUDMASCOT_BRIDGE ?? join(ROOT, "server/bin/gpt-image-icon");
 const GEN_TIMEOUT_MS = Number(process.env.KUDMASCOT_GEN_TIMEOUT_MS ?? 15 * 60_000);
+const BATCH_MAX = Number(process.env.KUDMASCOT_BATCH_MAX ?? 9);
+// wait this long after the newest Generate tap, so taps made in a row land in one grid
+const BATCH_SETTLE_MS = Number(process.env.KUDMASCOT_BATCH_SETTLE_MS ?? 45_000);
 const VARIANTS = [
   "Lean the object to the right (clockwise), cropped by the bottom and right edges.",
   "Mirror the usual layout: lean the object to the LEFT (counter-clockwise), with its body running off the bottom and LEFT edges and the open background at the top-right.",
@@ -168,15 +171,89 @@ async function generate(app: App) {
   }
 }
 
+function gridPrompt(apps: App[], cols: number, rows: number) {
+  const md = readFileSync(join(ROOT, "style/prompt.md"), "utf8");
+  const m = md.match(/<!-- grid:start -->([\s\S]*?)<!-- grid:end -->/);
+  if (!m) throw new Error("style/prompt.md has no grid block");
+  const cells = apps
+    .map((a, i) => {
+      const lean = i % 2 ? "leans LEFT (counter-clockwise), body off the bottom-left" : "leans RIGHT (clockwise), body off the bottom-right";
+      return `${i + 1}. (row ${Math.floor(i / cols) + 1}, column ${(i % cols) + 1}) "${a.label}" (${a.package}): object ${lean}.${a.hint ? " " + a.hint : ""}`;
+    })
+    .join("\n");
+  return m[1]
+    .replaceAll("{{N}}", String(apps.length))
+    .replaceAll("{{COLS}}", String(cols))
+    .replaceAll("{{ROWS}}", String(rows))
+    .replaceAll("{{CELLS}}", cells)
+    .trim();
+}
+
+// One image call for up to BATCH_MAX apps: a contact sheet, cut into one draft each.
+async function generateBatch(apps: App[]) {
+  const n = apps.length;
+  const cols = n <= 3 ? n : 3;
+  const rows = Math.ceil(n / cols);
+  const stem = `batch-${Date.now()}`;
+  const jobLog = join(STATE, "jobs", `${stem}.log`);
+  const sheet = join(DATA, "drafts", `${stem}-sheet.png`);
+  const refSheet = join(DATA, "drafts", `${stem}-refs.png`);
+  const fail = (err: string) => {
+    log("batch failed", stem, err);
+    for (const a of apps) db.query("UPDATE apps SET status='failed', error=?, updated_at=? WHERE drawable=?").run(err, now(), a.drawable);
+  };
+  const origs = apps.map((a) => (a.original ? join(DATA, "originals", a.original) : ""));
+  const r = await run(["python3", join(ROOT, "style/grid.py"), "refsheet", refSheet, String(cols), ...origs], jobLog, 60_000);
+  if (r.code !== 0) return fail(`refsheet exit ${r.code}: ${r.err.slice(-300)}`);
+  const refs = ["--ref", join(ROOT, "style/refs/family-clean.png"), "--ref", join(ROOT, "style/refs/ntfy-D2.png"), "--ref", refSheet];
+  log("generate batch", stem, apps.map((a) => a.drawable).join(","));
+  const g = await run([BRIDGE, gridPrompt(apps, cols, rows), sheet, "--size", `${cols * 512}x${rows * 512}`, ...refs], jobLog, GEN_TIMEOUT_MS);
+  if (g.code !== 0 || !existsSync(sheet)) return fail(`bridge exit ${g.code}: ${g.err.slice(-300)}`);
+  const sp = await run(["python3", join(ROOT, "style/grid.py"), "split", sheet, String(cols), String(rows), String(n), join(DATA, "drafts"), stem], jobLog, 60_000);
+  if (sp.code !== 0) return fail(`split exit ${sp.code}: ${sp.err.slice(-300)}`);
+  for (let i = 0; i < n; i++) {
+    const a = apps[i];
+    const round = a.round + 1;
+    const raw = join(DATA, "drafts", `${stem}-${i + 1}.png`);
+    const png = join(DATA, "drafts", `${a.drawable}-r${round}-v1-${stem}.png`);
+    const m = await run(["python3", join(ROOT, "style/mute.py"), raw, png], jobLog, 60_000);
+    if (m.code !== 0 || !existsSync(png)) {
+      db.query("UPDATE apps SET status='failed', error=?, updated_at=? WHERE drawable=?").run(`mute exit ${m.code}: ${m.err.slice(-300)}`, now(), a.drawable);
+      continue;
+    }
+    db.query("INSERT INTO variants (drawable, round, idx, raw, png, note, created_at) VALUES (?,?,?,?,?,?,?)").run(
+      a.drawable, round, 1, basename(raw), basename(png), null, now(),
+    );
+    db.query("UPDATE apps SET status='drafted', round=?, error=NULL, updated_at=? WHERE drawable=?").run(round, now(), a.drawable);
+  }
+}
+
 async function workerLoop() {
   // anything left "generating" by a crash goes back in the queue
   db.query("UPDATE apps SET status='queued' WHERE status='generating'").run();
   for (;;) {
-    const app = db.query("SELECT * FROM apps WHERE status='queued' ORDER BY updated_at LIMIT 1").get() as App | null;
-    if (!app) {
-      await Bun.sleep(3000);
+    // a reviewer note means a single-icon redo (2 variants); everything else is drawn in grids
+    const noted = db.query("SELECT * FROM apps WHERE status='queued' AND note IS NOT NULL ORDER BY updated_at LIMIT 1").get() as App | null;
+    if (!noted) {
+      const batch = db.query("SELECT * FROM apps WHERE status='queued' ORDER BY updated_at LIMIT ?").all(BATCH_MAX) as App[];
+      const newest = Math.max(0, ...batch.map((a) => Date.parse(a.updated_at) || 0));
+      if (!batch.length || (batch.length < BATCH_MAX && Date.now() - newest < BATCH_SETTLE_MS)) {
+        await Bun.sleep(3000);
+        continue;
+      }
+      busy = `${batch.length} apps`;
+      for (const a of batch) db.query("UPDATE apps SET status='generating', updated_at=? WHERE drawable=?").run(now(), a.drawable);
+      try {
+        await generateBatch(batch);
+      } catch (e) {
+        log("worker error", "batch", String(e));
+        for (const a of batch)
+          db.query("UPDATE apps SET status='failed', error=?, updated_at=? WHERE drawable=? AND status='generating'").run(String(e), now(), a.drawable);
+      }
+      busy = null;
       continue;
     }
+    const app = noted;
     busy = app.drawable;
     db.query("UPDATE apps SET status='generating', updated_at=? WHERE drawable=?").run(now(), app.drawable);
     try {

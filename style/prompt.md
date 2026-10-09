@@ -40,6 +40,31 @@ FACE — a SMALL face sitting LOW on the object, below its centre and below any 
 {{NOTE}}
 <!-- prompt:end -->
 
+## Batch template (grid mode)
+
+The default path. The worker takes up to 9 queued apps (no reviewer note) and draws them in ONE call as a
+`{{COLS}}`×`{{ROWS}}` contact sheet, then `style/grid.py split` cuts the cells and `mute.py` runs on each.
+Refs for a batch: `family-clean.png`, `ntfy-D2.png`, then a ref sheet of the apps' original icons laid out in
+the same cell order (`grid.py refsheet`). `{{CELLS}}` is one numbered line per app. Regenerating with a note
+always uses the single-icon template above (2 variants).
+
+<!-- grid:start -->
+Draw a contact sheet of {{N}} brand-new square Android app icons arranged in a grid of {{COLS}} columns × {{ROWS}} rows, read left to right, top to bottom. Each icon is a full-bleed square tile with sharp corners (no rounded corners, no frame, no circle), all tiles the same size, separated by thin PURE WHITE gutters, with a thin pure white margin around the sheet. No labels, no numbers, no text anywhere. Leave any unused cell pure white.
+
+The attached images are guides only, never copy them into the sheet. FIRST reference = the STYLE (four example mascot icons: style only, never their subjects or circular crops). SECOND reference = the COMPOSITION (tilted cream body cut off by the tile edges, small low face). THIRD reference = the real icons of these {{N}} apps, laid out in the SAME grid order as the cells below: cell 1 is top-left. Take each cell's glyph and brand colours from the matching icon there; ignore their containers, frames and backgrounds.
+
+Every tile follows the same rules:
+STYLE: flat cut-paper illustration, soft paper grain, a few big flat shapes, no outlines, no gloss, no 3D, no text or letters.
+SUBJECT: the app's signature object/glyph becomes a chunky cream (#FEF8E8) mascot character, a SOLID filled cream body (never an outline or ring), keeping the brand's silhouette so it is recognisable at 48 dp, with the brand's accent details in its own colours, slightly dusty.
+COMPOSITION: the cream object is oversized, visibly tilted 8–15°, part of it runs off the tile edge, but it covers only about 60% of the tile: a generous area of background stays visible. Background = one flat, dusty, slightly desaturated version of the app's main brand colour (if the icon background is white, use the brand's main accent colour; never black or dark grey unless the brand colour is black).
+SAFE ZONE: the face and every identity cue sit inside the central 66% of each tile; only cream body and plain background may run to the tile edges.
+FACE: a SMALL face LOW on the object (lower third of the visible body): two tiny dark ink dot eyes set fairly wide, a tiny curved smile, faint pink cheek blushes. Small, never chibi.
+All tiles must look like one family drawn by the same hand.
+
+The cells:
+{{CELLS}}
+<!-- grid:end -->
+
 ## Variant directions
 
 The worker makes two drafts per request with these `{{VARIANT}}` lines:
