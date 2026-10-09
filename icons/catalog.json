@@ -1,10 +1,138 @@
 {
   "icons": [
     {
+      "drawable": "app_desty_chat",
+      "label": "Desty Chat",
+      "components": [
+        "app.desty.chat/app.desty.chat.splash.RouteActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_android_chrome",
+      "label": "Chrome",
+      "components": [
+        "com.android.chrome/com.google.android.apps.chrome.Main"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_android_vending",
+      "label": "Play Store",
+      "components": [
+        "com.android.vending/com.android.vending.AssetBrowserActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_bca",
+      "label": "BCA mobile",
+      "components": [
+        "com.bca/com.bca.mobile.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_docs_editors_sheets",
+      "label": "Sheets",
+      "components": [
+        "com.google.android.apps.docs.editors.sheets/com.google.android.apps.docs.app.NewMainProxyActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_gm",
+      "label": "Gmail",
+      "components": [
+        "com.google.android.gm/com.google.android.gm.ConversationListActivityGmail"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_grabtaxi_passenger",
+      "label": "Grab",
+      "components": [
+        "com.grabtaxi.passenger/com.grab.pax.newface.common.alias.DefaultLauncherAlias"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_instagram_android",
+      "label": "Instagram",
+      "components": [
+        "com.instagram.android/com.instagram.android.activity.MainTabActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_shopee_id",
+      "label": "Shopee",
+      "components": [
+        "com.shopee.id/com.shopee.app.ui.home.HomeActivity_"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_shopee_shopeeseller",
+      "label": "Shopee Seller",
+      "components": [
+        "com.shopee.shopeeseller/com.shopee.app.ui.home.HomeActivity_"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_spotify_music",
+      "label": "Spotify",
+      "components": [
+        "com.spotify.music/com.spotify.music.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_t3tools_t3code",
+      "label": "T3 Code",
+      "components": [
+        "com.t3tools.t3code/com.t3tools.t3code.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tailscale_ipn",
+      "label": "Tailscale",
+      "components": [
+        "com.tailscale.ipn/com.tailscale.ipn.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tiktokshop_seller",
+      "label": "Seller Center",
+      "components": [
+        "com.tiktokshop.seller/com.tiktokshop.seller.AppLauncher.ID"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_whatsapp",
       "label": "WhatsApp",
       "components": [
         "com.whatsapp/com.whatsapp.Main"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "dev_imranr_obtainium",
+      "label": "Obtainium",
+      "components": [
+        "dev.imranr.obtainium/dev.imranr.obtainium.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_chromium_webapk_af4b4e34e3cc4275b_v2",
+      "label": "Proyek",
+      "components": [
+        "org.chromium.webapk.af4b4e34e3cc4275b_v2/org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
       ],
       "added": "2026-10-09"
     }
