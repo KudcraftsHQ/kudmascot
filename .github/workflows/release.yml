@@ -85,7 +85,15 @@ jobs:
           APK=app/build/outputs/apk/release/app-release.apk
           APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)apksigner
           "$APKSIGNER" verify --print-certs "$APK"
-          unzip -l "$APK" | grep -E 'res/xml|assets/appfilter|drawable' | head -40 || true
+          # Release builds shorten res/ paths, so check by resource NAME (what launchers look up).
+          AAPT2=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt2
+          "$AAPT2" dump resources "$APK" > "$RUNNER_TEMP/res.txt"
+          grep -E 'xml/(appfilter|drawable)|array/icon_pack' "$RUNNER_TEMP/res.txt"
+          for d in $(python3 -c "import json;print(' '.join(i['drawable'] for i in json.load(open('../icons/catalog.json'))['icons']))"); do
+            grep -q "drawable/$d " "$RUNNER_TEMP/res.txt" || grep -q "drawable/$d\$" "$RUNNER_TEMP/res.txt" || { echo "missing drawable/$d in APK" >&2; exit 1; }
+            echo "ok drawable/$d"
+          done
+          unzip -p "$APK" assets/appfilter.xml
           mkdir -p ../dist
           cp "$APK" "../dist/kudmascot-${KC_TAG}.apk"
           (cd ../dist && sha256sum *.apk > SHA256SUMS)

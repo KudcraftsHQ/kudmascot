@@ -18,7 +18,7 @@ const STATE = process.env.KUDMASCOT_STATE ?? join(HOME, ".local/state/kudmascot"
 const PUBLISH_REPO = process.env.KUDMASCOT_PUBLISH_REPO ?? join(DATA, "repo");
 const GH_REPO = process.env.KUDMASCOT_GH_REPO ?? "KudcraftsHQ/kudmascot";
 const REMOTE = process.env.KUDMASCOT_REMOTE ?? `git@github.com:${GH_REPO}.git`;
-const BRIDGE = process.env.KUDMASCOT_BRIDGE ?? join(HOME, ".claude/skills/gpt-image-bridge/bin/gpt-image-2");
+const BRIDGE = process.env.KUDMASCOT_BRIDGE ?? join(ROOT, "server/bin/gpt-image-icon");
 const GEN_TIMEOUT_MS = Number(process.env.KUDMASCOT_GEN_TIMEOUT_MS ?? 15 * 60_000);
 const VARIANTS = [
   "Lean the object to the right (clockwise), cropped by the bottom and right edges.",
@@ -130,7 +130,7 @@ async function run(cmd: string[], logFile: string, timeoutMs: number) {
 async function generate(app: App) {
   const round = app.round + 1;
   const jobLog = join(STATE, "jobs", `${app.drawable}-r${round}.log`);
-  const refs = ["--ref", join(ROOT, "style/refs/family.png")];
+  const refs = ["--ref", join(ROOT, "style/refs/family-clean.png")];
   if (app.original) refs.push("--ref", join(DATA, "originals", app.original));
   if (app.note && app.note_variant) {
     const v = db.query("SELECT * FROM variants WHERE id = ?").get(app.note_variant) as Variant | null;
