@@ -1,0 +1,142 @@
+# kudmascot for Mac (menu-bar app in macos/).
+# - Push to main touching macos/ (or this file): build, test, ad-hoc sign, zip, EdDSA-sign for Sparkle,
+#   publish GitHub Release mac-v1.0.<run> as a PRE-RELEASE with --latest=false, and re-upload
+#   appcast.xml to the rolling `mac-appcast` release (the stable Sparkle feed URL).
+#   Mac releases must never become the repo's "latest": Obtainium tracks latest for the Android APK.
+# - Pull requests touching macos/: build + test only.
+# Secret: SPARKLE_ED_PRIVATE_KEY (backup in ~/.config/kudmascot/sparkle_ed25519_private.key on hammas-dev).
+name: mac
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'macos/**'
+      - '.github/workflows/mac.yml'
+  pull_request:
+    paths:
+      - 'macos/**'
+      - '.github/workflows/mac.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mac-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SPARKLE_VERSION: 2.10.0   # keep equal to the pin in macos/Package.swift
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 40
+    env:
+      IS_RELEASE: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+    defaults:
+      run:
+        working-directory: macos
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: swift --version && xcodebuild -version && sw_vers
+
+      - name: Build (debug)
+        run: swift build
+
+      - name: Test (applies an icon to a dummy .app through IconApplier)
+        run: swift test
+
+      - name: Version
+        run: |
+          echo "VERSION=1.0.${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
+          echo "TAG=mac-v1.0.${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
+
+      - name: Assemble app bundle
+        run: |
+          VERSION="$VERSION" ./build.sh --no-install
+          A=build/kudmascot.app
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' $A/Contents/Info.plist)" = "$VERSION"
+          test -d $A/Contents/Frameworks/Sparkle.framework
+          test -f $A/Contents/Resources/AppIcon.icns
+          otool -l $A/Contents/MacOS/kudmascot | grep -A2 LC_RPATH | grep -q '@executable_path/../Frameworks'
+          lipo -archs $A/Contents/MacOS/kudmascot
+          codesign --verify --deep --strict $A
+          codesign -dv $A 2>&1 | grep -E 'Signature|Identifier'
+          plutil -lint $A/Contents/Info.plist
+
+      - name: Smoke test - the built binary applies and restores an icon (the admin CLI path)
+        run: |
+          set -x
+          D="$RUNNER_TEMP/smoke"; rm -rf "$D"; mkdir -p "$D/Dummy.app/Contents/MacOS"
+          cat > "$D/Dummy.app/Contents/Info.plist" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+          <key>CFBundleIdentifier</key><string>com.example.dummy</string>
+          <key>CFBundleExecutable</key><string>Dummy</string>
+          <key>CFBundlePackageType</key><string>APPL</string>
+          </dict></plist>
+          PLIST
+          printf '#!/bin/sh\n' > "$D/Dummy.app/Contents/MacOS/Dummy"; chmod +x "$D/Dummy.app/Contents/MacOS/Dummy"
+          sips -s format png Resources/AppIcon.icns --out "$D/icon.png" >/dev/null
+          BIN=build/kudmascot.app/Contents/MacOS/kudmascot
+          "$BIN" --version
+          "$BIN" --apply-icon "$D/Dummy.app" "$D/icon.png"
+          test -f "$D/Dummy.app/Icon"$'\r'
+          xattr -px com.apple.FinderInfo "$D/Dummy.app"
+          FLAGS=$(xattr -px com.apple.FinderInfo "$D/Dummy.app" | tr -d ' \n' | cut -c17-18)
+          test $(( 0x$FLAGS & 0x04 )) -ne 0
+          echo '[{"app":"'"$D/Dummy.app"'","png":null}]' > "$D/m.json"
+          "$BIN" --apply-icons "$D/m.json"
+          test ! -f "$D/Dummy.app/Icon"$'\r'
+          echo "smoke OK"
+
+      - name: Zip
+        run: |
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent build/kudmascot.app "dist/kudmascot-mac-$VERSION.zip"
+          ls -la dist
+
+      - name: Sparkle sign + appcast
+        env:
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+        run: |
+          test -n "$SPARKLE_ED_PRIVATE_KEY" || { echo "SPARKLE_ED_PRIVATE_KEY secret is missing"; exit 1; }
+          curl -fsSL -o "$RUNNER_TEMP/sparkle.tar.xz" \
+            "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz"
+          mkdir -p "$RUNNER_TEMP/sparkle" && tar -xf "$RUNNER_TEMP/sparkle.tar.xz" -C "$RUNNER_TEMP/sparkle"
+          ATTRS="$(printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | "$RUNNER_TEMP/sparkle/bin/sign_update" --ed-key-file - "dist/kudmascot-mac-$VERSION.zip")"
+          scripts/appcast.sh "$VERSION" "dist/kudmascot-mac-$VERSION.zip" "$ATTRS" > dist/appcast.xml
+          cat dist/appcast.xml
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet cryptography
+          "$RUNNER_TEMP/venv/bin/python" scripts/verify-update.py build/kudmascot.app/Contents/Info.plist dist/appcast.xml "dist/kudmascot-mac-$VERSION.zip"
+
+      - uses: actions/upload-artifact@v4
+        if: env.IS_RELEASE != 'true'
+        with:
+          name: kudmascot-mac
+          path: macos/dist/
+          retention-days: 7
+
+      - name: Publish (pre-release, never "latest") and update the rolling appcast
+        if: env.IS_RELEASE == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="kudmascot for Mac $VERSION. Menu-bar app that applies kudmascot icons to your Mac apps. Download the zip, unzip, move kudmascot.app to /Applications, first launch: right-click → Open (ad-hoc signed). Later versions install themselves (Sparkle). Marked pre-release on purpose so Obtainium keeps tracking the Android APK."
+          gh release create "$TAG" "dist/kudmascot-mac-$VERSION.zip" --target "$GITHUB_SHA" \
+            --title "kudmascot for Mac $VERSION" --notes "$NOTES" --prerelease --latest=false
+          if gh release view mac-appcast >/dev/null 2>&1; then
+            gh release upload mac-appcast dist/appcast.xml --clobber
+          else
+            gh release create mac-appcast dist/appcast.xml --target "$GITHUB_SHA" --title "kudmascot for Mac: update feed" \
+              --notes "Rolling Sparkle feed for the Mac app (appcast.xml is replaced on every Mac release). Not a download." --prerelease --latest=false
+          fi
+          LATEST=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)
+          echo "repo latest release: $LATEST"
+          case "$LATEST" in mac-*) echo "a Mac release became latest; Obtainium would break" >&2; exit 1 ;; esac

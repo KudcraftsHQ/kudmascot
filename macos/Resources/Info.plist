@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key><string>en</string>
+    <key>CFBundleExecutable</key><string>kudmascot</string>
+    <key>CFBundleIdentifier</key><string>com.kudcrafts.kudmascot.mac</string>
+    <key>CFBundleName</key><string>kudmascot</string>
+    <key>CFBundleDisplayName</key><string>kudmascot</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>1.0.0</string>
+    <key>CFBundleVersion</key><string>1.0.0</string>
+    <key>LSMinimumSystemVersion</key><string>13.0</string>
+    <key>SUFeedURL</key><string>https://github.com/KudcraftsHQ/kudmascot/releases/download/mac-appcast/appcast.xml</string>
+    <key>SUPublicEDKey</key><string>QuGEtJSwO78SBDiwpMEF+MmZ8sUjlKAAL652PkBd4LY=</string>
+    <key>SUEnableAutomaticChecks</key><true/>
+    <key>SUAutomaticallyUpdate</key><true/>
+    <key>SUScheduledCheckInterval</key><integer>86400</integer>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>LSUIElement</key><true/>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>NSHumanReadableCopyright</key><string>Personal use.</string>
+</dict>
+</plist>

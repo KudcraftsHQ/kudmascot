@@ -24,6 +24,18 @@ button.ghost{font:inherit;font-size:13px;background:none;border:0;color:var(--mu
 .inbox{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .row-i{display:grid;grid-template-columns:36px 1fr auto auto auto;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid var(--line)}.row-i:first-child{border-top:0}
 .row-i img{width:36px;height:36px;border-radius:9px}.row-i .t{min-width:0}.row-i .t b{display:block;font-size:14px}.row-i small{display:block;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pf{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.02em;padding:1px 6px;border-radius:99px;margin-left:6px;vertical-align:1px;background:#e3ead9;color:#3e5a2f}
+.pf.mac{background:#e2e3ef;color:#3b3f6b}
+.row-s{padding:10px;border-top:1px solid var(--line);background:#fbf3df}.row-s:first-child{border-top:0}
+.row-s .pair{display:flex;align-items:center;gap:10px}
+.row-s .pair img{width:40px;height:40px;border-radius:10px;flex:none;background:#fff}
+.row-s .pair .arrow{color:var(--muted);font-size:13px;flex:none}
+.row-s .pair .t{min-width:0;flex:1}.row-s .pair b{font-size:14px}.row-s small{display:block;color:var(--muted);font-size:11px}
+.row-s .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.macrow{display:flex;gap:14px;align-items:center;background:linear-gradient(160deg,#6d8fb5,#a7b9c9);border-radius:12px;padding:10px 12px;margin:8px 0 4px;overflow-x:auto}
+.macrow .lbl{color:#fff;font-size:11px;opacity:.9;min-width:44px}
+.macrow img{width:64px;height:64px;display:block;flex:none}
+.macrow figure{margin:0;text-align:center;color:#fff;font-size:10px;opacity:.95}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
 .head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .head img{width:40px;height:40px;border-radius:10px}
@@ -80,6 +92,9 @@ function ci(){
   if(data.busy)s+='<span><span class="dot run"></span>Generating '+esc(data.busy)+'…</span>';
   return s||'<span>No CI runs yet</span>';
 }
+const pfs=a=>(a.platforms&&a.platforms.length?a.platforms:[a.platform||'android']).map(p=>'<span class="pf '+p+'">'+(p==='mac'?'Mac':'Android')+'</span>').join('');
+const macv=v=>'/img/macv/'+v.id+'.png';
+function macRow(list){return '<div class="macrow"><span class="lbl">macOS</span>'+list.map(v=>'<figure><img loading="lazy" src="'+macv(v)+'" alt="macOS icon"><figcaption>#'+v.idx+'</figcaption></figure>').join('')+'</div>'}
 const SHAPES=['circle','squircle','square'];
 function shapes(label,src){return '<span class="lbl">'+label+'</span>'+SHAPES.map(k=>'<img class="ic '+k+'" src="'+src+'" alt="'+k+'">').join('')}
 function frame(src){return src?'<img class="ic orig" src="'+src+'">':''}
@@ -87,7 +102,7 @@ function draftCard(a){
   const latest=a.variants.filter(v=>v.round===a.round), older=a.variants.filter(v=>v.round!==a.round);
   const busy=a.status==='generating'||a.status==='queued';
   let h='<div class="card" id="c-'+a.drawable+'"><div class="head">'+(a.original?'<img src="'+orig(a)+'">':'')+
-    '<div class="t"><b>'+esc(a.label)+'</b><small>'+esc(a.components.join(', ')||a.package)+'</small></div><span class="tag '+a.status+'">'+
+    '<div class="t"><b>'+esc(a.label)+pfs(a)+'</b><small>'+esc(a.components.join(', ')||a.package)+'</small></div><span class="tag '+a.status+'">'+
     (a.status==='queued'&&a.note?'regenerating':a.status)+'</span></div>';
   if(latest.length){
     h+='<div class="vars">'+latest.map(v=>'<div class="var'+(a.approved_variant===v.id?' sel':'')+'"><img class="big" loading="lazy" src="'+img(v.png)+'">'+
@@ -96,6 +111,7 @@ function draftCard(a){
     h+='<div class="strip"><span></span>'+SHAPES.map(k=>'<span class="lbl" style="justify-self:center">'+k+'</span>').join('')+
       (a.original?'<span class="lbl">original</span><span></span>'+frame(orig(a))+'<span></span>':'')+
       latest.map(v=>shapes('#'+v.idx,img(v.png))).join('')+'</div>';
+    if((a.platforms||[]).includes('mac'))h+=macRow(latest);
   } else if(busy){h+='<div class="empty">'+(a.status==='generating'?(a.note?'Redrawing alone, 2 variants (about 10 min)…':'Drawing in a batch grid (about 5 min)…'):(a.note?'Queued for a redraw':'Queued. Batches start 45 s after your last Generate tap, up to 9 apps per grid'))+'</div>'}
   if(a.status==='queued')h+='<div class="foot"><button class="ghost" onclick="unqueue(\\''+a.drawable+'\\')">Cancel</button></div>';
   if(a.status==='queued'&&a.note)h+='<div class="err" style="color:var(--muted)">Note: '+esc(a.note)+'</div>';
@@ -111,19 +127,32 @@ function draftCard(a){
 function gallery(list,restore){
   if(!list.length)return '<div class="empty">Nothing here yet.</div>';
   return '<div class="gal">'+list.map(a=>{const v=a.variants.find(v=>v.id===a.approved_variant);
-    return '<div class="g">'+(v?'<img loading="lazy" style="border-radius:34%" src="'+img(v.png)+'">':frame(orig(a)))+'<b>'+esc(a.label)+'</b><small>'+esc(a.status)+'</small>'+
+    const mac=(a.platforms||[]).includes('mac');
+    return '<div class="g">'+(v?(mac?'<img loading="lazy" src="'+macv(v)+'">':'<img loading="lazy" style="border-radius:34%" src="'+img(v.png)+'">'):frame(orig(a)))+'<b>'+esc(a.label)+'</b><small>'+esc(a.status)+'</small><div>'+pfs(a)+'</div>'+
       (restore&&a.status!=='published'?'<button class="ghost" onclick="restore(\\''+a.drawable+'\\')">'+(a.status==='approved'?'unapprove':'restore')+'</button>':'')+'</div>'}).join('')+'</div>';
 }
 function inbox(list){
-  if(!list.length)return '<div class="empty">Inbox is empty. Request icons from the kudmascot app on your phone.</div>';
+  if(!list.length)return '<div class="empty">Inbox is empty. Request icons from the kudmascot app on your phone or Mac.</div>';
   const f=(filter||'').toLowerCase(), shown=list.filter(a=>!f||(a.label+' '+a.package).toLowerCase().includes(f));
   return '<input class="search" placeholder="Filter '+list.length+' requested apps" value="'+esc(filter)+'" oninput="filter=this.value;render();const i=document.querySelector(\\'.search\\');i.focus();i.setSelectionRange(i.value.length,i.value.length)">'+
-    '<div class="inbox">'+shown.map(a=>'<div class="row-i">'+(a.original?'<img src="'+orig(a)+'">':'<span></span>')+
-    '<div class="t"><b>'+esc(a.label)+'</b><small>'+esc(a.package)+'</small></div>'+
+    '<div class="inbox">'+shown.map(a=>a.suggestion?suggestRow(a):'<div class="row-i">'+(a.original?'<img src="'+orig(a)+'">':'<span></span>')+
+    '<div class="t"><b>'+esc(a.label)+pfs(a)+'</b><small>'+esc(a.package)+'</small></div>'+
     '<button class="pri" onclick="queue(\\''+a.drawable+'\\')">Generate</button>'+
     '<button class="ghost" title="Generate with a hint" onclick="queueHint(\\''+a.drawable+'\\')">…</button>'+
     '<button class="ghost" onclick="skip(\\''+a.drawable+'\\')">Skip</button></div>').join('')+'</div>';
 }
+function suggestRow(a){
+  const t=a.suggestion, tsrc=t.png?img(t.png):(t.original?'/img/originals/'+encodeURIComponent(t.original):'');
+  const tp=(t.platforms||[]).map(p=>p==='mac'?'Mac':'Android').join(' + ')||'—';
+  return '<div class="row-s"><div class="pair">'+(a.original?'<img src="'+orig(a)+'" alt="this app">':'')+'<span class="arrow">≈</span>'+
+    (tsrc?'<img src="'+tsrc+'" alt="existing drawing"'+(t.png?' style="border-radius:34%"':'')+'>':'')+
+    '<div class="t"><b>'+esc(a.label)+pfs(a)+'</b><small>'+esc(a.package)+'</small><small>Same as <b>'+esc(t.label)+'</b> ('+esc(tp)+', '+esc(t.status)+') · '+esc(t.reason||'')+'</small></div></div>'+
+    '<div class="acts"><button class="pri" onclick="merge(\\''+a.drawable+'\\',\\''+t.drawable+'\\')">Use same drawing</button>'+
+    '<button class="sec" onclick="separate(\\''+a.drawable+'\\')">Draw separately</button>'+
+    '<button class="ghost" onclick="skip(\\''+a.drawable+'\\')">Skip</button></div></div>';
+}
+async function merge(d,t){try{const r=await api('/api/apps/'+d+'/merge',{target:t});toast(['approved','published'].includes(r.status)?'Using the same drawing. It is already approved, so it applies now':'Using the same drawing');load()}catch(e){toast(e.message)}}
+async function separate(d){try{await api('/api/apps/'+d+'/separate',{});toast('Queued to draw separately');load()}catch(e){toast(e.message)}}
 function render(){
   const q=data.apps.filter(a=>['drafted','generating','queued','failed'].includes(a.status));
   const inb=data.apps.filter(a=>a.status==='requested').sort((x,y)=>x.label.localeCompare(y.label));

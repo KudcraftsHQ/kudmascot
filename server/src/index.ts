@@ -6,7 +6,9 @@ import { Database } from "bun:sqlite";
 import { mkdirSync, existsSync, readFileSync, writeFileSync, appendFileSync, copyFileSync } from "node:fs";
 import { join, resolve, basename } from "node:path";
 import { homedir } from "node:os";
+import { createHash } from "node:crypto";
 import { reviewPage, loginPage } from "./page";
+import { suggestFor, type Candidate, type Platform } from "./match";
 
 const HOME = homedir();
 const PORT = Number(process.env.KUDMASCOT_PORT ?? 4488);
@@ -32,7 +34,7 @@ if (!TOKEN) {
   console.error("KUDMASCOT_TOKEN is not set (see ~/.config/kudmascot/env)");
   process.exit(1);
 }
-for (const d of [DATA, STATE, join(DATA, "originals"), join(DATA, "drafts"), join(STATE, "jobs")]) mkdirSync(d, { recursive: true });
+for (const d of [DATA, STATE, join(DATA, "originals"), join(DATA, "drafts"), join(DATA, "mac"), join(STATE, "jobs")]) mkdirSync(d, { recursive: true });
 
 function log(...a: unknown[]) {
   const line = `${new Date().toISOString()} ${a.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join(" ")}`;
@@ -85,13 +87,28 @@ CREATE TABLE IF NOT EXISTS publishes (
   error TEXT
 );
 `);
+// In-place migrations (additive only; existing rows keep their data and default to android).
+function addColumn(table: string, col: string, def: string) {
+  const cols = db.query(`PRAGMA table_info(${table})`).all() as { name: string }[];
+  if (!cols.some((c) => c.name === col)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
+    console.log(`migrated: ${table}.${col}`);
+  }
+}
+addColumn("components", "platform", "TEXT NOT NULL DEFAULT 'android'"); // android | mac (component 'mac:<bundleId>')
+addColumn("apps", "platform", "TEXT NOT NULL DEFAULT 'android'");       // platform of the request that created the drawing
+addColumn("apps", "suggest", "TEXT");                                   // drawable of a cross-platform match (never auto-merged)
+addColumn("apps", "suggest_reason", "TEXT");
+addColumn("apps", "merged_into", "TEXT");                               // status 'merged': "Use same drawing" pointed it here
 const now = () => new Date().toISOString();
 
 export type App = {
   drawable: string; package: string; label: string; status: string; original: string | null;
   hint: string | null; note: string | null; note_variant: number | null; round: number;
   approved_variant: number | null; error: string | null; created_at: string; updated_at: string;
+  platform: Platform; suggest: string | null; suggest_reason: string | null; merged_into: string | null;
 };
+type Component = { component: string; drawable: string; label: string; in_catalog: number; platform: Platform; created_at: string };
 export type Variant = { id: number; drawable: string; round: number; idx: number; raw: string; png: string; note: string | null; created_at: string };
 
 export function drawableFor(pkg: string) {
@@ -278,9 +295,13 @@ async function git(args: string[], cwd = PUBLISH_REPO) {
 }
 
 function pendingPublish() {
-  const apps = db.query("SELECT * FROM apps WHERE status='approved'").all() as App[];
+  // Only drawings an Android launcher component points at go into the APK. Mac-only drawings stay
+  // 'approved' (the Mac app serves them from /api/mac/icons without a publish).
+  const apps = db
+    .query("SELECT * FROM apps a WHERE status='approved' AND EXISTS (SELECT 1 FROM components c WHERE c.drawable=a.drawable AND c.platform='android')")
+    .all() as App[];
   const comps = db
-    .query("SELECT c.* FROM components c JOIN apps a ON a.drawable=c.drawable WHERE c.in_catalog=0 AND a.status IN ('approved','published')")
+    .query("SELECT c.* FROM components c JOIN apps a ON a.drawable=c.drawable WHERE c.in_catalog=0 AND c.platform='android' AND a.status IN ('approved','published')")
     .all() as { component: string; drawable: string; label: string }[];
   return { apps, comps };
 }
@@ -319,7 +340,7 @@ async function publish() {
       ensure(a.drawable, a.label);
     }
     const allComps = db
-      .query("SELECT c.* FROM components c JOIN apps a ON a.drawable=c.drawable WHERE a.status IN ('approved','published')")
+      .query("SELECT c.* FROM components c JOIN apps a ON a.drawable=c.drawable WHERE c.platform='android' AND a.status IN ('approved','published')")
       .all() as { component: string; drawable: string; label: string }[];
     for (const c of allComps) {
       const e = byDrawable.get(c.drawable);
@@ -402,74 +423,215 @@ app.use("*", async (c, next) => {
   return c.json({ error: "unauthorized" }, 401);
 });
 
-// ---- phone API ----
-// POST /api/requests { requests: [{ package, activity, label, icon (base64 PNG) }] }
+// ---- phone + Mac API ----
+function saveOriginal(drawable: string, icon?: string) {
+  if (!icon) return null;
+  const original = `${drawable}.png`;
+  const buf = Buffer.from(icon.replace(/^data:image\/\w+;base64,/, ""), "base64");
+  const tmp = join(DATA, "originals", `${drawable}.upload.png`);
+  writeFileSync(tmp, buf);
+  // flatten transparency onto white so the model sees the real silhouette
+  const f = Bun.spawnSync(["python3", "-c",
+    "import sys;from PIL import Image;im=Image.open(sys.argv[1]).convert('RGBA');bg=Image.new('RGBA',im.size,(255,255,255,255));bg.alpha_composite(im);bg.convert('RGB').save(sys.argv[2])",
+    tmp, join(DATA, "originals", original)]);
+  return f.exitCode === 0 ? original : null;
+}
+
+// Existing drawings that could be the same app on the other platform.
+function candidates(exclude: string): Candidate[] {
+  const apps = db.query("SELECT drawable, label FROM apps WHERE status NOT IN ('merged','skipped') AND drawable != ?").all(exclude) as { drawable: string; label: string }[];
+  const comps = db.query("SELECT component, drawable, platform FROM components").all() as Component[];
+  const by = new Map<string, Candidate>(apps.map((a) => [a.drawable, { drawable: a.drawable, label: a.label, ids: [] }]));
+  for (const c of comps) {
+    const k = by.get(c.drawable);
+    if (!k) continue;
+    k.ids.push({ platform: c.platform, id: c.platform === "mac" ? c.component.slice(4) : c.component.split("/")[0] });
+  }
+  return [...by.values()];
+}
+
+function suggestInto(drawable: string, platform: Platform, id: string, label: string) {
+  const s = suggestFor(platform, id, label, candidates(drawable));
+  if (!s) return;
+  db.query("UPDATE apps SET suggest=?, suggest_reason=? WHERE drawable=?").run(s.drawable, s.reason, drawable);
+  log("suggest", drawable, "->", s.drawable, s.reason);
+}
+
+// Follow "Use same drawing" links so later requests land on the shared drawing.
+function resolveApp(drawable: string) {
+  let a = db.query("SELECT * FROM apps WHERE drawable=?").get(drawable) as App | null;
+  for (let i = 0; a && a.status === "merged" && a.merged_into && i < 5; i++)
+    a = db.query("SELECT * FROM apps WHERE drawable=?").get(a.merged_into) as App | null;
+  return a;
+}
+
+type ReqIn = { package?: string; activity?: string; label?: string; icon?: string; hint?: string; platform?: string; bundleId?: string; name?: string };
+
+// POST /api/requests
+//   Android (unchanged): { requests: [{ package, activity, label, icon (base64 PNG) }] }
+//   Mac: { platform: "mac", requests: [{ bundleId, name, icon }] }  (or platform:"mac" per request)
 app.post("/api/requests", async (c) => {
-  const body = await c.req.json<{ requests: { package: string; activity: string; label: string; icon?: string; hint?: string }[] }>();
-  const results: { component: string; drawable: string; status: string; created: boolean }[] = [];
+  const body = await c.req.json<{ platform?: string; requests: ReqIn[] }>();
+  const results: { component: string; drawable: string; status: string; created: boolean; suggest?: string | null }[] = [];
   for (const r of body.requests ?? []) {
+    const platform: Platform = (r.platform ?? body.platform) === "mac" ? "mac" : "android";
+    if (platform === "mac") {
+      const bundleId = (r.bundleId ?? r.package ?? "").trim();
+      if (!bundleId) continue;
+      const component = `mac:${bundleId}`;
+      const label = (r.name || r.label || bundleId).slice(0, 80);
+      const existing = db.query("SELECT * FROM components WHERE component=?").get(component) as Component | null;
+      let a = existing ? resolveApp(existing.drawable) : null;
+      let created = false;
+      if (!a) {
+        const drawable = "mac_" + drawableFor(bundleId);
+        a = resolveApp(drawable);
+        if (!a) {
+          db.query("INSERT INTO apps (drawable, package, label, status, original, hint, platform, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?)").run(
+            drawable, bundleId, label, "requested", saveOriginal(drawable, r.icon), r.hint ?? null, "mac", now(), now(),
+          );
+          suggestInto(drawable, "mac", bundleId, label);
+          a = db.query("SELECT * FROM apps WHERE drawable=?").get(drawable) as App;
+          created = true;
+          log("request", component, label);
+        }
+      }
+      if (a.status === "failed") {
+        db.query("UPDATE apps SET status='requested', updated_at=? WHERE drawable=?").run(now(), a.drawable);
+        a.status = "requested";
+      }
+      if (!existing)
+        db.query("INSERT OR IGNORE INTO components (component, drawable, label, platform, created_at) VALUES (?,?,?,?,?)").run(component, a.drawable, label, "mac", now());
+      results.push({ component, drawable: a.drawable, status: a.status, created, suggest: a.suggest });
+      continue;
+    }
     if (!r.package || !r.activity) continue;
     const activity = r.activity.startsWith(".") ? r.package + r.activity : r.activity;
     const component = `${r.package}/${activity}`;
-    const drawable = drawableFor(r.package);
+    const existing = db.query("SELECT * FROM components WHERE component=?").get(component) as Component | null;
     const label = (r.label || r.package).slice(0, 80);
-    let a = db.query("SELECT * FROM apps WHERE drawable=?").get(drawable) as App | null;
+    let a = resolveApp(existing ? existing.drawable : drawableFor(r.package));
     let created = false;
     if (!a) {
-      let original: string | null = null;
-      if (r.icon) {
-        original = `${drawable}.png`;
-        const buf = Buffer.from(r.icon.replace(/^data:image\/\w+;base64,/, ""), "base64");
-        const tmp = join(DATA, "originals", `${drawable}.upload.png`);
-        writeFileSync(tmp, buf);
-        // flatten transparency onto white so the model sees the real silhouette
-        const f = Bun.spawnSync(["python3", "-c",
-          "import sys;from PIL import Image;im=Image.open(sys.argv[1]).convert('RGBA');bg=Image.new('RGBA',im.size,(255,255,255,255));bg.alpha_composite(im);bg.convert('RGB').save(sys.argv[2])",
-          tmp, join(DATA, "originals", original)]);
-        if (f.exitCode !== 0) original = null;
-      }
+      const drawable = drawableFor(r.package);
       db.query("INSERT INTO apps (drawable, package, label, status, original, hint, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)").run(
-        drawable, r.package, label, "requested", original, r.hint ?? null, now(), now(),
+        drawable, r.package, label, "requested", saveOriginal(drawable, r.icon), r.hint ?? null, now(), now(),
       );
+      suggestInto(drawable, "android", r.package, label);
       a = db.query("SELECT * FROM apps WHERE drawable=?").get(drawable) as App;
       created = true;
       log("request", component, label);
     } else if (a.status === "failed") {
-      db.query("UPDATE apps SET status='requested', updated_at=? WHERE drawable=?").run(now(), drawable);
+      db.query("UPDATE apps SET status='requested', updated_at=? WHERE drawable=?").run(now(), a.drawable);
       a.status = "requested";
     }
-    db.query("INSERT OR IGNORE INTO components (component, drawable, label, created_at) VALUES (?,?,?,?)").run(component, drawable, label, now());
-    results.push({ component, drawable, status: a.status, created });
+    db.query("INSERT OR IGNORE INTO components (component, drawable, label, created_at) VALUES (?,?,?,?)").run(component, a.drawable, label, now());
+    results.push({ component, drawable: a.drawable, status: a.status, created });
   }
   return c.json({ results });
 });
 
-// GET /api/status -> { components: { "pkg/act": status }, packages: { pkg: status } }
+// GET /api/status -> { components: { "pkg/act": status }, packages: { pkg: status } }   (Android only, as before)
 app.get("/api/status", (c) => {
-  const rows = db.query("SELECT c.component, a.package, a.status FROM components c JOIN apps a ON a.drawable=c.drawable").all() as {
-    component: string; package: string; status: string;
-  }[];
-  const apps = db.query("SELECT package, status FROM apps").all() as { package: string; status: string }[];
+  const rows = db
+    .query("SELECT c.component, a.package, a.status, a.merged_into FROM components c JOIN apps a ON a.drawable=c.drawable WHERE c.platform='android'")
+    .all() as { component: string; package: string; status: string; merged_into: string | null }[];
+  const st = (r: { status: string; merged_into: string | null }) => (r.status === "merged" && r.merged_into ? resolveApp(r.merged_into)?.status ?? r.status : r.status);
+  const apps = db.query("SELECT package, status, merged_into FROM apps WHERE platform='android'").all() as { package: string; status: string; merged_into: string | null }[];
+  const packages: Record<string, string> = Object.fromEntries(apps.map((r) => [r.package, st(r)]));
   return c.json({
-    components: Object.fromEntries(rows.map((r) => [r.component, r.status])),
-    packages: Object.fromEntries(apps.map((r) => [r.package, r.status])),
+    components: Object.fromEntries(rows.map((r) => [r.component, st(r)])),
+    packages,
   });
+});
+
+// ---- Mac art ----
+const MACOS_PY = join(ROOT, "style/macos.py");
+function variantById(id: number | null) {
+  return id ? (db.query("SELECT * FROM variants WHERE id=?").get(id) as Variant | null) : null;
+}
+// Version = hash of the art and of the shape step, so either changing makes the Mac re-apply.
+function macVersion(v: Variant) {
+  const h = createHash("sha256");
+  h.update(readFileSync(join(DATA, "drafts", v.png)));
+  h.update(readFileSync(MACOS_PY));
+  return h.digest("hex").slice(0, 16);
+}
+// Mac-shaped 1024 px PNG for a variant, rendered once by style/macos.py and cached under mac/.
+function macPng(v: Variant) {
+  const ver = macVersion(v);
+  const out = join(DATA, "mac", `${v.drawable}-${v.id}-${ver}.png`);
+  if (existsSync(out)) return { path: out, version: ver };
+  const raw = join(DATA, "drafts", v.raw);
+  // the raw generation is un-muted and larger; mute it here for a sharper 824 px body
+  const args = existsSync(raw) ? [raw, out, "--mute"] : [join(DATA, "drafts", v.png), out];
+  const r = Bun.spawnSync(["python3", MACOS_PY, ...args], { stderr: "pipe" });
+  if (r.exitCode !== 0 || !existsSync(out)) throw new Error(`macos.py exit ${r.exitCode}: ${r.stderr.toString().slice(-300)}`);
+  return { path: out, version: ver };
+}
+
+// GET /api/mac/icons -> every Mac component whose drawing is approved or published
+app.get("/api/mac/icons", (c) => {
+  const rows = db
+    .query("SELECT c.component, a.drawable, a.approved_variant FROM components c JOIN apps a ON a.drawable=c.drawable WHERE c.platform='mac' AND a.status IN ('approved','published') AND a.approved_variant IS NOT NULL")
+    .all() as { component: string; drawable: string; approved_variant: number }[];
+  const icons = [];
+  for (const r of rows) {
+    const v = variantById(r.approved_variant);
+    if (!v) continue;
+    icons.push({ bundleId: r.component.slice(4), drawable: r.drawable, version: macVersion(v), url: `/api/mac/icon/${r.drawable}.png` });
+  }
+  return c.json({ icons });
+});
+
+// GET /api/mac/icon/:drawable.png — stable URL; always the current approved art, Mac-shaped
+app.get("/api/mac/icon/:file", (c) => {
+  const d = basename(c.req.param("file")).replace(/\.png$/, "");
+  const a = db.query("SELECT * FROM apps WHERE drawable=? AND status IN ('approved','published')").get(d) as App | null;
+  const v = variantById(a?.approved_variant ?? null);
+  if (!v) return c.notFound();
+  const m = macPng(v);
+  return new Response(Bun.file(m.path), { headers: { "content-type": "image/png", etag: `"${m.version}"`, "x-kudmascot-version": m.version, "cache-control": "private, no-cache" } });
+});
+
+// GET /api/mac/status -> { apps: { bundleId: { status, suggest } } } for the menu-bar counts
+app.get("/api/mac/status", (c) => {
+  const rows = db
+    .query("SELECT c.component, a.drawable, a.status, a.merged_into, a.suggest FROM components c JOIN apps a ON a.drawable=c.drawable WHERE c.platform='mac'")
+    .all() as { component: string; drawable: string; status: string; merged_into: string | null; suggest: string | null }[];
+  const apps: Record<string, { status: string; suggested: boolean }> = {};
+  for (const r of rows) {
+    const a = r.status === "merged" && r.merged_into ? resolveApp(r.merged_into) : null;
+    apps[r.component.slice(4)] = { status: a?.status ?? r.status, suggested: !!r.suggest && r.status === "requested" };
+  }
+  return c.json({ apps });
 });
 
 // ---- review API ----
 app.get("/api/review", async (c) => {
   const apps = db.query("SELECT * FROM apps ORDER BY updated_at DESC").all() as App[];
   const variants = db.query("SELECT * FROM variants ORDER BY round DESC, idx").all() as Variant[];
-  const comps = db.query("SELECT * FROM components").all() as { component: string; drawable: string; in_catalog: number }[];
+  const comps = db.query("SELECT * FROM components").all() as Component[];
   const { apps: pa, comps: pc } = pendingPublish();
   const pubs = db.query("SELECT * FROM publishes ORDER BY id DESC LIMIT 5").all();
+  const byD = new Map(apps.map((a) => [a.drawable, a]));
   return c.json({
     busy, publishing,
-    apps: apps.map((a) => ({
-      ...a,
-      variants: variants.filter((v) => v.drawable === a.drawable),
-      components: comps.filter((x) => x.drawable === a.drawable).map((x) => x.component),
-    })),
+    apps: apps.filter((a) => a.status !== "merged").map((a) => {
+      const mine = comps.filter((x) => x.drawable === a.drawable);
+      const t = a.suggest && a.status === "requested" ? byD.get(a.suggest) : undefined;
+      const tv = t ? variants.find((v) => v.id === t.approved_variant) ?? variants.find((v) => v.drawable === t.drawable && v.round === t.round) : undefined;
+      return {
+        ...a,
+        variants: variants.filter((v) => v.drawable === a.drawable),
+        components: mine.map((x) => x.component),
+        platforms: [...new Set(mine.map((x) => x.platform))],
+        suggestion: t && t.status !== "merged" && t.status !== "skipped"
+          ? { drawable: t.drawable, label: t.label, status: t.status, reason: a.suggest_reason, original: t.original, png: tv?.png ?? null,
+              platforms: [...new Set(comps.filter((x) => x.drawable === t.drawable).map((x) => x.platform))] }
+          : null,
+      };
+    }),
     pending: { apps: pa.length, components: pc.length },
     publishes: pubs,
     ci: ciStatus(),
@@ -533,6 +695,35 @@ app.post("/api/apps/:drawable/restore", (c) => {
   return c.json({ ok: true });
 });
 
+// "Use same drawing": attach this request's components to an existing drawing (no generation).
+// If that drawing is already approved/published, the Mac app picks it up on its next poll.
+app.post("/api/apps/:drawable/merge", async (c) => {
+  const d = c.req.param("drawable");
+  const { target } = await c.req.json<{ target?: string }>().catch(() => ({}) as { target?: string });
+  const a = db.query("SELECT * FROM apps WHERE drawable=?").get(d) as App | null;
+  if (!a || a.status !== "requested") return c.json({ error: "only an inbox row can be merged" }, 409);
+  const t = resolveApp(target || a.suggest || "");
+  if (!t || t.drawable === d || t.status === "skipped") return c.json({ error: "no such drawing" }, 404);
+  db.transaction(() => {
+    db.query("UPDATE components SET drawable=?, in_catalog=0 WHERE drawable=?").run(t.drawable, d);
+    db.query("UPDATE apps SET merged_into=? WHERE merged_into=?").run(t.drawable, d);
+    db.query("UPDATE apps SET status='merged', merged_into=?, updated_at=? WHERE drawable=?").run(t.drawable, now(), d);
+  })();
+  log("merge", d, "->", t.drawable, t.status);
+  return c.json({ ok: true, drawable: t.drawable, status: t.status });
+});
+
+// "Draw separately": drop the suggestion and queue it like Generate.
+app.post("/api/apps/:drawable/separate", async (c) => {
+  const d = c.req.param("drawable");
+  const r = db
+    .query("UPDATE apps SET suggest=NULL, suggest_reason=NULL, status='queued', error=NULL, updated_at=? WHERE drawable=? AND status='requested'")
+    .run(now(), d);
+  if (!r.changes) return c.json({ error: "not in the inbox" }, 409);
+  log("separate", d);
+  return c.json({ ok: true });
+});
+
 app.post("/api/publish", async (c) => {
   if (publishing) return c.json({ error: "already publishing" }, 409);
   try {
@@ -549,6 +740,17 @@ app.get("/img/:kind/:file", (c) => {
   const p = join(DATA, kind, file);
   if (!existsSync(p)) return c.notFound();
   return new Response(Bun.file(p), { headers: { "content-type": "image/png", "cache-control": "private, max-age=86400" } });
+});
+
+// Mac-shaped preview of one variant (review page)
+app.get("/img/macv/:id", (c) => {
+  const v = variantById(Number(basename(c.req.param("id")).replace(/\.png$/, "")));
+  if (!v) return c.notFound();
+  try {
+    return new Response(Bun.file(macPng(v).path), { headers: { "content-type": "image/png", "cache-control": "private, max-age=86400" } });
+  } catch (e) {
+    return c.json({ error: String(e) }, 500);
+  }
 });
 
 app.get("/", (c) => c.html(reviewPage()));
