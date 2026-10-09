@@ -134,7 +134,10 @@ function gallery(list,restore){
 function inbox(list){
   if(!list.length)return '<div class="empty">Inbox is empty. Request icons from the kudmascot app on your phone or Mac.</div>';
   const f=(filter||'').toLowerCase(), shown=list.filter(a=>!f||(a.label+' '+a.package).toLowerCase().includes(f));
-  return '<input class="search" placeholder="Filter '+list.length+' requested apps" value="'+esc(filter)+'" oninput="filter=this.value;render();const i=document.querySelector(\\'.search\\');i.focus();i.setSelectionRange(i.value.length,i.value.length)">'+
+  const sug=list.filter(a=>a.suggestion).length;
+  return '<div class="row" style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="pri" onclick="queueAll()">Generate all '+(list.length-sug)+'</button>'+
+    (sug?'<small style="color:var(--muted)">'+sug+' with a suggested match stay here until you pick Use same or Draw separately</small>':'')+'</div>'+
+    '<input class="search" placeholder="Filter '+list.length+' requested apps" value="'+esc(filter)+'" oninput="filter=this.value;render();const i=document.querySelector(\\'.search\\');i.focus();i.setSelectionRange(i.value.length,i.value.length)">'+
     '<div class="inbox">'+shown.map(a=>a.suggestion?suggestRow(a):'<div class="row-i">'+(a.original?'<img src="'+orig(a)+'">':'<span></span>')+
     '<div class="t"><b>'+esc(a.label)+pfs(a)+'</b><small>'+esc(a.package)+'</small></div>'+
     '<button class="pri" onclick="queue(\\''+a.drawable+'\\')">Generate</button>'+
@@ -175,6 +178,7 @@ async function approve(d,v){try{await api('/api/apps/'+d+'/approve',{variant:v})
 function noteFor(d,v){openNote[d]=v;render();const t=document.getElementById('n-'+d);t&&t.focus()}
 function closeNote(d){delete openNote[d];render()}
 async function regen(d){const note=document.getElementById('n-'+d).value;try{await api('/api/apps/'+d+'/regenerate',{note,variant:openNote[d]||undefined});delete openNote[d];toast('Queued for regeneration');load()}catch(e){toast(e.message)}}
+async function queueAll(){if(!confirm('Queue every app in the Inbox? They are drawn 9 per image call, about 5 min each.'))return;try{const r=await api('/api/queue-all',{});toast('Queued '+r.queued+(r.left?', '+r.left+' left for a decision':''));load()}catch(e){toast(e.message)}}
 async function queue(d,hint){try{await api('/api/apps/'+d+'/queue',{hint});toast('Queued. Tap more within 45 s to batch them together');load()}catch(e){toast(e.message)}}
 function queueHint(d){const h=prompt('Hint for the drawing (e.g. "the object is a red gift box")');if(h!==null)queue(d,h)}
 async function unqueue(d){try{await api('/api/apps/'+d+'/unqueue',{});load()}catch(e){toast(e.message)}}

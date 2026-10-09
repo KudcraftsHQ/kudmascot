@@ -670,6 +670,15 @@ app.post("/api/apps/:drawable/queue", async (c) => {
   return c.json({ ok: true });
 });
 
+// "Generate all": queue every inbox row except ones with a cross-platform suggestion (those need
+// "Use same drawing" or "Draw separately" first, so the same app is never drawn twice).
+app.post("/api/queue-all", (c) => {
+  const r = db.query("UPDATE apps SET status='queued', error=NULL, updated_at=? WHERE status='requested' AND suggest IS NULL").run(now());
+  const left = db.query("SELECT COUNT(*) n FROM apps WHERE status='requested'").get() as { n: number };
+  log("queue-all", r.changes, "left", left.n);
+  return c.json({ ok: true, queued: r.changes, left: left.n });
+});
+
 app.post("/api/apps/:drawable/unqueue", (c) => {
   const d = c.req.param("drawable");
   const has = db.query("SELECT COUNT(*) n FROM variants WHERE drawable=?").get(d) as { n: number };
