@@ -558,13 +558,13 @@ function macVersion(v: Variant) {
   return h.digest("hex").slice(0, 16);
 }
 // Mac-shaped 1024 px PNG for a variant, rendered once by style/macos.py and cached under mac/.
-function macPng(v: Variant) {
+function macPng(v: Variant, size = 1024) {
   const ver = macVersion(v);
-  const out = join(DATA, "mac", `${v.drawable}-${v.id}-${ver}.png`);
+  const out = join(DATA, "mac", `${v.drawable}-${v.id}-${ver}${size === 1024 ? "" : `-${size}`}.png`);
   if (existsSync(out)) return { path: out, version: ver };
   const raw = join(DATA, "drafts", v.raw);
   // the raw generation is un-muted and larger; mute it here for a sharper 824 px body
-  const args = existsSync(raw) ? [raw, out, "--mute"] : [join(DATA, "drafts", v.png), out];
+  const args = [...(existsSync(raw) ? [raw, out, "--mute"] : [join(DATA, "drafts", v.png), out]), "--size", String(size)];
   const r = Bun.spawnSync(["python3", MACOS_PY, ...args], { stderr: "pipe" });
   if (r.exitCode !== 0 || !existsSync(out)) throw new Error(`macos.py exit ${r.exitCode}: ${r.stderr.toString().slice(-300)}`);
   return { path: out, version: ver };
@@ -733,6 +733,17 @@ app.post("/api/publish", async (c) => {
   }
 });
 
+// Mac-shaped preview of one variant (review page)
+app.get("/img/macv/:id", (c) => {
+  const v = variantById(Number(basename(c.req.param("id")).replace(/\.png$/, "")));
+  if (!v) return c.notFound();
+  try {
+    return new Response(Bun.file(macPng(v, 256).path), { headers: { "content-type": "image/png", "cache-control": "private, max-age=86400" } });
+  } catch (e) {
+    return c.json({ error: String(e) }, 500);
+  }
+});
+
 app.get("/img/:kind/:file", (c) => {
   const kind = c.req.param("kind");
   const file = basename(c.req.param("file"));
@@ -740,17 +751,6 @@ app.get("/img/:kind/:file", (c) => {
   const p = join(DATA, kind, file);
   if (!existsSync(p)) return c.notFound();
   return new Response(Bun.file(p), { headers: { "content-type": "image/png", "cache-control": "private, max-age=86400" } });
-});
-
-// Mac-shaped preview of one variant (review page)
-app.get("/img/macv/:id", (c) => {
-  const v = variantById(Number(basename(c.req.param("id")).replace(/\.png$/, "")));
-  if (!v) return c.notFound();
-  try {
-    return new Response(Bun.file(macPng(v).path), { headers: { "content-type": "image/png", "cache-control": "private, max-age=86400" } });
-  } catch (e) {
-    return c.json({ error: String(e) }, 500);
-  }
 });
 
 app.get("/", (c) => c.html(reviewPage()));

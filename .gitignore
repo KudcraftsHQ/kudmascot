@@ -16,3 +16,4 @@ android/local.properties
 dist/
 server/node_modules/
 .DS_Store
+__pycache__/

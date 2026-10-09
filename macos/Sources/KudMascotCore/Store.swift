@@ -12,7 +12,7 @@ public struct Applied: Codable, Hashable, Sendable {
     public init(version: String, path: String, at: Date = Date()) { self.version = version; self.path = path; self.at = at }
 }
 
-public struct State: Codable, Sendable {
+public struct SavedState: Codable, Sendable {
     public var applied: [String: Applied] = [:]
     /// Restored by hand: never re-applied until "Apply" again.
     public var keepOriginal: Set<String> = []
@@ -36,14 +36,14 @@ public enum Store {
     static var stateURL: URL { directory.appendingPathComponent("state.json") }
     static var tokenURL: URL { directory.appendingPathComponent("token") }
 
-    public static func load() -> State {
-        guard let data = try? Data(contentsOf: stateURL) else { return State() }
+    public static func load() -> SavedState {
+        guard let data = try? Data(contentsOf: stateURL) else { return SavedState() }
         let d = JSONDecoder()
         d.dateDecodingStrategy = .iso8601
-        return (try? d.decode(State.self, from: data)) ?? State()
+        return (try? d.decode(SavedState.self, from: data)) ?? SavedState()
     }
 
-    public static func save(_ state: State) {
+    public static func save(_ state: SavedState) {
         let e = JSONEncoder()
         e.dateEncodingStrategy = .iso8601
         e.outputFormatting = [.prettyPrinted, .sortedKeys]
