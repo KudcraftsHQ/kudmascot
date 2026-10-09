@@ -9,10 +9,170 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "app_linear",
+      "label": "Linear",
+      "components": [
+        "app.linear/app.linear.Launcher"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "blibli_mobile_commerce",
+      "label": "Blibli",
+      "components": [
+        "blibli.mobile.commerce/blibli.mobile.ng.commerce.core.init.view.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "co_mangotechnologies_clickup",
+      "label": "ClickUp",
+      "components": [
+        "co.mangotechnologies.clickup/co.mangotechnologies.clickup.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "co_pixo_apps_logoshop_androidapp",
+      "label": "Logo Maker Shop",
+      "components": [
+        "co.pixo.apps.logoshop.androidApp/co.pixo.apps.logoshop.androidApp.ui.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "coffee_fore2_fore",
+      "label": "Fore",
+      "components": [
+        "coffee.fore2.fore/coffee.fore2.fore.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "coid_ayo_ayo_mobile_app",
+      "label": "AYO",
+      "components": [
+        "coid.ayo.ayo_mobile_app/coid.ayo.ayo_mobile_app.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_accor_appli_hybrid",
+      "label": "ALL Accor",
+      "components": [
+        "com.accor.appli.hybrid/com.accor.app.splashscreen.view.SplashScreenActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_adobe_lrmobile",
+      "label": "Lightroom",
+      "components": [
+        "com.adobe.lrmobile/com.adobe.lrmobile.StorageCheckActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_agoda_mobile_consumer",
+      "label": "Agoda",
+      "components": [
+        "com.agoda.mobile.consumer/com.agoda.mobile.consumer.screens.splash.AppLauncherActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_airasia_mobile",
+      "label": "AirAsia MOVE",
+      "components": [
+        "com.airasia.mobile/com.airasia.mobile.MainActivityAliasDefault"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_airbnb_android",
+      "label": "Airbnb",
+      "components": [
+        "com.airbnb.android/com.airbnb.android.feat.splashscreen.SplashScreenActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_alfamart_alfagift",
+      "label": "Alfagift",
+      "components": [
+        "com.alfamart.alfagift/com.alfamart.alfagift.screen.splash.SplashActivityDefault"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_alibaba_intl_android_apps_poseidon",
+      "label": "Alibaba.com",
+      "components": [
+        "com.alibaba.intl.android.apps.poseidon/com.alibaba.intl.android.apps.poseidon.app.activity.ActivityMainMaterial"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_alibaba_wireless",
+      "label": "1688",
+      "components": [
+        "com.alibaba.wireless/com.alibaba.wireless.launch.LauncherActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_amazon_mshop_android_shopping",
+      "label": "Amazon Shopping",
+      "components": [
+        "com.amazon.mShop.android.shopping/com.amazon.mShop.home.HomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_android_camera",
+      "label": "Camera",
+      "components": [
+        "com.android.camera/com.android.camera.Camera"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_android_chrome",
       "label": "Chrome",
       "components": [
         "com.android.chrome/com.google.android.apps.chrome.Main"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_android_deskclock",
+      "label": "Clock",
+      "components": [
+        "com.android.deskclock/com.android.deskclock.DeskClockTabActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_android_providers_downloads_ui",
+      "label": "Downloads",
+      "components": [
+        "com.android.providers.downloads.ui/com.android.providers.downloads.ui.activity.DownloadListEntry"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_android_settings",
+      "label": "Settings",
+      "components": [
+        "com.android.settings/com.android.settings.MainSettings"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_android_thememanager",
+      "label": "Themes",
+      "components": [
+        "com.android.thememanager/com.android.thememanager.ThemeResourceTabActivity"
       ],
       "added": "2026-10-09"
     },
@@ -25,10 +185,363 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "com_anthropic_claude",
+      "label": "Claude",
+      "components": [
+        "com.anthropic.claude/com.anthropic.claude.mainactivity.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_apps_myxl",
+      "label": "myXL",
+      "components": [
+        "com.apps.MyXL/com.myxlultimate.app.ui.view.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_atlassian_android_jira_core",
+      "label": "Jira",
+      "components": [
+        "com.atlassian.android.jira.core/com.atlassian.android.jira.core.app.LauncherActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_authy_authy",
+      "label": "Authy",
+      "components": [
+        "com.authy.authy/com.authy.authy.activities.InitializationActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_backdrops_wallpapers",
+      "label": "Backdrops",
+      "components": [
+        "com.backdrops.wallpapers/com.backdrops.wallpapers.WelcomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_bca",
       "label": "BCA mobile",
       "components": [
         "com.bca/com.bca.mobile.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_bca_halobca_android",
+      "label": "Halo BCA",
+      "components": [
+        "com.bca.halobca.android/com.bca.halobca.android.revamp.presentation.view.activity.RHomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_bca_mybca_omni_android",
+      "label": "myBCA",
+      "components": [
+        "com.bca.mybca.omni.android/com.bca.mybca.omni.android.presentation.splashscreenrevamp.SplashScreenActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_bergel_tauros",
+      "label": "Loklok",
+      "components": [
+        "com.bergel.tauros/com.bergel.tauros.module_home.HomeActivityNew",
+        "com.tv.loklok/com.loklok.flash.android.module_home.HomeActivityNew"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_binance_dev",
+      "label": "Binance",
+      "components": [
+        "com.binance.dev/com.eaas.launcher.activities.main.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_booking",
+      "label": "Booking.com",
+      "components": [
+        "com.booking/com.booking.startup.HomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_bpjstku",
+      "label": "JMO",
+      "components": [
+        "com.bpjstku/com.bpjstku.presentation.splash.SplashscreenActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_camerafilm_lofiretro",
+      "label": "Camera",
+      "components": [
+        "com.camerafilm.lofiretro/com.miui.activity.MySplashScreen"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_canva_editor",
+      "label": "Canva",
+      "components": [
+        "com.canva.editor/com.canva.app.editor.splash.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_caynax_hourlychime",
+      "label": "Caynax Hourly Chime",
+      "components": [
+        "com.caynax.hourlychime/com.caynax.hourlychime.free.l"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_chess",
+      "label": "Chess",
+      "components": [
+        "com.chess/com.chess.splash.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_cloudflare_onedotonedotonedotone",
+      "label": "1.1.1.1",
+      "components": [
+        "com.cloudflare.onedotonedotonedotone/com.cloudflare.app.presentation.main.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_color_block_jam3d_candy_jelly",
+      "label": "Block Out Master: Color Jam 3d",
+      "components": [
+        "com.color.block.jam3d.candy.jelly/com.unity3d.player.UnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_corelink_earfun",
+      "label": "EarFun Audio",
+      "components": [
+        "com.corelink.earfun/com.corelink.earfun.page.login.WelcomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_deepseek_chat",
+      "label": "DeepSeek",
+      "components": [
+        "com.deepseek.chat/com.deepseek.chat.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_deliveree_user",
+      "label": "Deliveree",
+      "components": [
+        "com.deliveree.user/com.deliveree.user.activity.SplashScreenActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_dropbox_android",
+      "label": "Dropbox",
+      "components": [
+        "com.dropbox.android/com.dropbox.android.activity.DropboxBrowser"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_duolingo",
+      "label": "Duolingo",
+      "components": [
+        "com.duolingo/com.duolingo.app.LoginActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_eco_global_app",
+      "label": "ECOVACS HOME",
+      "components": [
+        "com.eco.global.app/com.eco.main.activity.EcoLauncherActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_eg_android_alipaygphone",
+      "label": "Alipay",
+      "components": [
+        "com.eg.android.AlipayGphone/com.eg.android.AlipayGphone.AlipayLogin"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_epicoro_castleclashers",
+      "label": "Castle Busters",
+      "components": [
+        "com.epicoro.castleclashers/com.google.firebase.MessagingUnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_epson_mobilephone_android_epsonprintserviceplugin",
+      "label": "Epson Print Enabler",
+      "components": [
+        "com.epson.mobilephone.android.epsonprintserviceplugin/com.epson.mobilephone.android.epsonprintserviceplugin.WelcomeScreenActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_ezviz",
+      "label": "EZVIZ",
+      "components": [
+        "com.ezviz/com.ezviz.main.LoadingActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_facebook_adsmanager",
+      "label": "Meta Ads",
+      "components": [
+        "com.facebook.adsmanager/com.facebook.adsmanager.AdsManagerLoginActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_facebook_katana",
+      "label": "Facebook",
+      "components": [
+        "com.facebook.katana/com.facebook.katana.LoginActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_fatchicken007_headsupcharades2",
+      "label": "Charades!",
+      "components": [
+        "com.fatchicken007.headsupcharades2/com.ansca.corona.CoronaActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_feynman_ai",
+      "label": "Feynman AI",
+      "components": [
+        "com.feynman.ai/com.feynman.ai.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_filmic_filmicpro",
+      "label": "Filmic Pro",
+      "components": [
+        "com.filmic.filmicpro/com.filmic.activity.FilmicActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_flightradar24free",
+      "label": "Flightradar24",
+      "components": [
+        "com.flightradar24free/com.flightradar24free.feature.splash.view.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_fujicubesoft_manybricksbreaker",
+      "label": "Many Bricks",
+      "components": [
+        "com.fujicubesoft.ManyBricksBreaker/com.unity3d.player.UnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_github_android",
+      "label": "GitHub",
+      "components": [
+        "com.github.android/com.github.android.main.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_goersapp_goers",
+      "label": "Goers",
+      "components": [
+        "com.goersapp.goers/com.goersapp.goers.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_gojek_app",
+      "label": "Gojek",
+      "components": [
+        "com.gojek.app/com.gojek.app.home.GojekHomeActivityAlias"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_gojek_gopay",
+      "label": "GoPay",
+      "components": [
+        "com.gojek.gopay/com.gojek.gopay.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_adm",
+      "label": "Find Hub",
+      "components": [
+        "com.google.android.apps.adm/com.google.android.apps.adm.activities.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_authenticator2",
+      "label": "Authenticator",
+      "components": [
+        "com.google.android.apps.authenticator2/com.google.android.apps.authenticator2.main.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_bard",
+      "label": "Gemini",
+      "components": [
+        "com.google.android.apps.bard/com.google.android.apps.bard.shellapp.BardEntryPointActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_chromecast_app",
+      "label": "Home",
+      "components": [
+        "com.google.android.apps.chromecast.app/com.google.android.apps.chromecast.app.DiscoveryActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_docs",
+      "label": "Drive",
+      "components": [
+        "com.google.android.apps.docs/com.google.android.apps.docs.app.NewMainProxyActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_docs_editors_docs",
+      "label": "Docs",
+      "components": [
+        "com.google.android.apps.docs.editors.docs/com.google.android.apps.docs.app.NewMainProxyActivity"
       ],
       "added": "2026-10-09"
     },
@@ -41,10 +554,131 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "com_google_android_apps_fitness",
+      "label": "Fit",
+      "components": [
+        "com.google.android.apps.fitness/com.google.android.apps.fitness.welcome.WelcomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_maps",
+      "label": "Maps",
+      "components": [
+        "com.google.android.apps.maps/com.google.android.maps.MapsActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_messaging",
+      "label": "Messages",
+      "components": [
+        "com.google.android.apps.messaging/com.google.android.apps.messaging.ui.ConversationListActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_nbu_files",
+      "label": "Files",
+      "components": [
+        "com.google.android.apps.nbu.files/com.google.android.apps.nbu.files.home.HomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_photos",
+      "label": "Photos",
+      "components": [
+        "com.google.android.apps.photos/com.google.android.apps.photos.home.HomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_subscriptions_red",
+      "label": "Google One",
+      "components": [
+        "com.google.android.apps.subscriptions.red/com.google.android.apps.subscriptions.red.LauncherActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_tachyon",
+      "label": "Meet",
+      "components": [
+        "com.google.android.apps.tachyon/com.google.android.apps.tachyon.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_apps_translate",
+      "label": "Translate",
+      "components": [
+        "com.google.android.apps.translate/com.google.android.apps.translate.TranslateActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_calendar",
+      "label": "Calendar",
+      "components": [
+        "com.google.android.calendar/com.android.calendar.AllInOneActivity",
+        "com.xiaomi.calendar/com.android.calendar.homepage.AllInOneActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_contacts",
+      "label": "Contacts",
+      "components": [
+        "com.google.android.contacts/com.android.contacts.activities.PeopleActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_dialer",
+      "label": "Phone",
+      "components": [
+        "com.google.android.dialer/com.google.android.dialer.extensions.GoogleDialtactsActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_google_android_gm",
       "label": "Gmail",
       "components": [
         "com.google.android.gm/com.google.android.gm.ConversationListActivityGmail"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_googlequicksearchbox",
+      "label": "Google",
+      "components": [
+        "com.google.android.googlequicksearchbox/com.google.android.googlequicksearchbox.SearchActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_videos",
+      "label": "Google TV",
+      "components": [
+        "com.google.android.videos/com.google.android.videos.GoogleTvEntryPoint"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_android_youtube",
+      "label": "YouTube",
+      "components": [
+        "com.google.android.youtube/com.google.android.youtube.app.honeycomb.Shell$HomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_google_ar_lens",
+      "label": "Lens",
+      "components": [
+        "com.google.ar.lens/com.google.vr.apps.ornament.app.lens.LensLauncherActivity"
       ],
       "added": "2026-10-09"
     },
@@ -57,10 +691,370 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "com_gymbros_app",
+      "label": "Liftoff",
+      "components": [
+        "com.gymbros.app/com.gymbros.app.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_hevy",
+      "label": "Hevy",
+      "components": [
+        "com.hevy/com.hevy.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_hitapps_figgerits",
+      "label": "Figgerits",
+      "components": [
+        "com.hitapps.figgerits/com.unity3d.player.UnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_huawei_appmarket",
+      "label": "AppGallery",
+      "components": [
+        "com.huawei.appmarket/com.huawei.appmarket.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_huawei_health",
+      "label": "Huawei Health",
+      "components": [
+        "com.huawei.health/com.huawei.health.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_indra_haramain_pro",
+      "label": "HHR Train",
+      "components": [
+        "com.indra.haramain.pro/presentation.ui.features.splash.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_instagram_android",
       "label": "Instagram",
       "components": [
         "com.instagram.android/com.instagram.android.activity.MainTabActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_instagram_barcelona",
+      "label": "Threads",
+      "components": [
+        "com.instagram.barcelona/com.instagram.barcelona.mainactivity.BarcelonaActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_jago_digitalbanking",
+      "label": "Jago",
+      "components": [
+        "com.jago.digitalBanking/com.jago.digitalBanking.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_jndapp_lux_black_iconpack",
+      "label": "Lux Black",
+      "components": [
+        "com.jndapp.lux.black.iconpack/com.jndapp.lux.black.iconpack.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_k24klik_android",
+      "label": "K24Klik",
+      "components": [
+        "com.k24klik.android/com.k24klik.android.AppIcon"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_kai_kaiticketing",
+      "label": "Access by KAI",
+      "components": [
+        "com.kai.kaiticketing/com.kai.kaiticketing.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_kemenag_haji_pintar_2019",
+      "label": "Satu Haji",
+      "components": [
+        "com.kemenag_haji_pintar_2019/com.kemenag_haji_pintar_2019.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_klook",
+      "label": "Klook",
+      "components": [
+        "com.klook/com.klooklib.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_lazada_android",
+      "label": "Lazada",
+      "components": [
+        "com.lazada.android/com.lazada.activities.EnterActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_lemon_lvoverseas",
+      "label": "CapCut",
+      "components": [
+        "com.lemon.lvoverseas/com.vega.main.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_lge_tonentalkplus_tonentalkfree",
+      "label": "LG TONE Free",
+      "components": [
+        "com.lge.tonentalkplus.tonentalkfree/com.lge.tonentalkfree.activity.IntroActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_linkdokter_halodoc_android",
+      "label": "Halodoc",
+      "components": [
+        "com.linkdokter.halodoc.android/com.linkdokter.halodoc.android.splash.presentation.ui.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_linkedin_android",
+      "label": "LinkedIn",
+      "components": [
+        "com.linkedin.android/com.linkedin.android.authenticator.LaunchActivityDefault"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_lokinative",
+      "label": "Dekoruma",
+      "components": [
+        "com.lokinative/com.lokinative.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_ludo_king",
+      "label": "Ludo King",
+      "components": [
+        "com.ludo.king/com.gametion.ludoking.LudoKingPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_lumut_dlueticket",
+      "label": "DLU Ferry",
+      "components": [
+        "com.lumut.dlueticket/com.lumut.dlueticket.activity.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_macrovideo_v380pro",
+      "label": "V380 Pro",
+      "components": [
+        "com.macrovideo.v380pro/com.macrovideo.v380pro.activities.LaunchActivityWithAd"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_mahersafadi_electron",
+      "label": "Electron",
+      "components": [
+        "com.mahersafadi.electron/com.mahersafadi.electron.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_mi_android_globalfileexplorer",
+      "label": "File Manager",
+      "components": [
+        "com.mi.android.globalFileexplorer/com.android.fileexplorer.FileExplorerTabActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_miniclip_eightballpool",
+      "label": "8 Ball Pool",
+      "components": [
+        "com.miniclip.eightballpool/com.miniclip.eightballpool.EightBallPoolActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_miui_calculator",
+      "label": "Calculator",
+      "components": [
+        "com.miui.calculator/com.miui.calculator.cal.CalculatorActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_miui_compass",
+      "label": "Compass",
+      "components": [
+        "com.miui.compass/com.miui.compass.CompassActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_miui_gallery",
+      "label": "Gallery",
+      "components": [
+        "com.miui.gallery/com.miui.gallery.activity.HomePageActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_miui_notes",
+      "label": "Notes",
+      "components": [
+        "com.miui.notes/com.miui.notes.ui.NotesListActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_miui_securitycenter",
+      "label": "Security",
+      "components": [
+        "com.miui.securitycenter/com.miui.securityscan.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_mob_crowd_arena_wars",
+      "label": "Epic Heroes",
+      "components": [
+        "com.mob.crowd.arena.wars/com.q1.ext.Q1UnityActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_mobilefootie_wc2010",
+      "label": "FotMob",
+      "components": [
+        "com.mobilefootie.wc2010/com.fotmob.android.ui.MainActivityWrapper"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_neptune_domino",
+      "label": "Higgs Games Island",
+      "components": [
+        "com.neptune.domino/com.pokercity.lobby.lobby"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_netflix_mediaclient",
+      "label": "Netflix",
+      "components": [
+        "com.netflix.mediaclient/com.netflix.mediaclient.ui.launch.UIWebViewActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_omnara_app",
+      "label": "Omnara",
+      "components": [
+        "com.omnara.app/com.omnara.app.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_openai_chatgpt",
+      "label": "ChatGPT",
+      "components": [
+        "com.openai.chatgpt/com.openai.chatgpt.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_os_airforce",
+      "label": "1945 Air Force",
+      "components": [
+        "com.os.airforce/com.google.firebase.MessagingUnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_ph03nix_x_capacityinfo",
+      "label": "Capacity Info",
+      "components": [
+        "com.ph03nix_x.capacityinfo/com.ph03nix_x.capacityinfo.activities.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_phonegap_dominos",
+      "label": "Domino's",
+      "components": [
+        "com.phonegap.dominos/com.phonegap.dominos.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_pinterest",
+      "label": "Pinterest",
+      "components": [
+        "com.pinterest/com.pinterest.activity.PinterestActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_rahmadid_apadoanya",
+      "label": "Apa Doanya",
+      "components": [
+        "com.rahmadid.apadoanya/com.rahmadid.apadoanya.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_raimbekov_android_sajde",
+      "label": "Sajda",
+      "components": [
+        "com.raimbekov.android.sajde/com.raimbekov.android.sajde.DefaultIcon"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_reddit_frontpage",
+      "label": "Reddit",
+      "components": [
+        "com.reddit.frontpage/launcher.worldcup2026"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_rovio_baba",
+      "label": "Angry Birds 2",
+      "components": [
+        "com.rovio.baba/com.unity3d.player.UnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_run_tower_defense",
+      "label": "Kingshot",
+      "components": [
+        "com.run.tower.defense/com.unity3d.player.MyMainPlayerActivity"
       ],
       "added": "2026-10-09"
     },
@@ -73,6 +1067,14 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "com_shopee_lite_id",
+      "label": "Shopee Lite",
+      "components": [
+        "com.shopee.lite.id/com.shopee.app.ui.home.HomeActivity_"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_shopee_shopeeseller",
       "label": "Shopee Seller",
       "components": [
@@ -81,10 +1083,42 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "com_shopeepay_id",
+      "label": "ShopeePay",
+      "components": [
+        "com.shopeepay.id/com.shopee.app.ui.home.HomeActivity_"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_spotify_music",
       "label": "Spotify",
       "components": [
         "com.spotify.music/com.spotify.music.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_ss_android_ugc_trill",
+      "label": "TikTok",
+      "components": [
+        "com.ss.android.ugc.trill/com.ss.android.ugc.aweme.splash.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_substack_app",
+      "label": "Substack",
+      "components": [
+        "com.substack.app/com.substack.app.ui.AppActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_supercell_hayday",
+      "label": "Hay Day",
+      "components": [
+        "com.supercell.hayday/com.supercell.hayday.GameApp"
       ],
       "added": "2026-10-09"
     },
@@ -105,10 +1139,154 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "com_telkomsel_telkomselcm",
+      "label": "MyTelkomsel",
+      "components": [
+        "com.telkomsel.telkomselcm/com.telkomsel.mytelkomsel.view.splash.ui.SplashActivityRevamp"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tencent_ig",
+      "label": "PUBG MOBILE",
+      "components": [
+        "com.tencent.ig/com.epicgames.ue4.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tencent_mm",
+      "label": "WeChat",
+      "components": [
+        "com.tencent.mm/com.tencent.mm.ui.LauncherUI"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_teslacoilsw_launcher",
+      "label": "Nova Launcher",
+      "components": [
+        "com.teslacoilsw.launcher/com.teslacoilsw.launcher.NovaShortcutHandler"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_threeds_homebyme",
+      "label": "HomeByMe",
+      "components": [
+        "com.threeds.homebyme/com.threeds.homebyme.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tiket_gits",
+      "label": "tiket.com",
+      "components": [
+        "com.tiket.gits/com.tiket.gits.HomeSplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "com_tiktokshop_seller",
       "label": "Seller Center",
       "components": [
         "com.tiktokshop.seller/com.tiktokshop.seller.AppLauncher.ID"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tokopedia_tkpd",
+      "label": "Tokopedia",
+      "components": [
+        "com.tokopedia.tkpd/com.ss.android.ugc.aweme.splash.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_topfreegames_bikeracefreeworld",
+      "label": "Bike Race",
+      "components": [
+        "com.topfreegames.bikeracefreeworld/com.topfreegames.bikerace.activities.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tpcstld_twozerogame",
+      "label": "2048",
+      "components": [
+        "com.tpcstld.twozerogame/com.tpcstld.twozerogame.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_tplink_tpm5",
+      "label": "Deco",
+      "components": [
+        "com.tplink.tpm5/com.tplink.tpm5.component.account.welcome.view.WelcomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_traveloka_android",
+      "label": "Traveloka",
+      "components": [
+        "com.traveloka.android/com.traveloka.android.appentry.splash.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_ttxapps_drivesync",
+      "label": "DriveSync",
+      "components": [
+        "com.ttxapps.drivesync/com.ttxapps.sync.app.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_twitter_android",
+      "label": "X",
+      "components": [
+        "com.twitter.android/com.x.android.main.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_ursabyte_garudaindonesiaairlines",
+      "label": "FlyGaruda",
+      "components": [
+        "com.ursabyte.garudaindonesiaairlines/com.example.flutter_fly_garuda.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_vectorunit_cobalt_googleplay",
+      "label": "BB Racing 2",
+      "components": [
+        "com.vectorunit.cobalt.googleplay/com.vectorunit.cobalt.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_vectorunit_purple_googleplay",
+      "label": "BB Racing",
+      "components": [
+        "com.vectorunit.purple.googleplay/com.vectorunit.purple.googleplay.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_vitotechnology_ephemeris",
+      "label": "Ephemeris",
+      "components": [
+        "com.vitotechnology.Ephemeris/com.google.firebase.MessagingUnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_wbd_stream",
+      "label": "HBO Max",
+      "components": [
+        "com.wbd.stream/com.wbd.fuse.appcore.FuseActivity"
       ],
       "added": "2026-10-09"
     },
@@ -121,6 +1299,46 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "com_wispr_flowapp",
+      "label": "Wispr Flow",
+      "components": [
+        "com.wispr.flowapp/com.wispr.flowapp.activity.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_x01",
+      "label": "AVARO",
+      "components": [
+        "com.x01/com.smart.ThingSplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_xiaomi_glgm",
+      "label": "Game Center",
+      "components": [
+        "com.xiaomi.glgm/com.mig.play.Icon0"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_xiaomi_mipicks",
+      "label": "GetApps",
+      "components": [
+        "com.xiaomi.mipicks/com.xiaomi.mipicks.DefaultAlias"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "com_xiaomi_scanner",
+      "label": "Scanner",
+      "components": [
+        "com.xiaomi.scanner/com.xiaomi.scanner.app.ScanActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "dev_imranr_obtainium",
       "label": "Obtainium",
       "components": [
@@ -129,10 +1347,290 @@
       "added": "2026-10-09"
     },
     {
+      "drawable": "epson_print",
+      "label": "Epson iPrint",
+      "components": [
+        "epson.print/epson.print.WellcomeScreenActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "fr_two4tea_fightlist",
+      "label": "FightList",
+      "components": [
+        "fr.two4tea.fightlist/com.two4tea.fightlist.activities.HWMHomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "fr_two4tea_petitbac",
+      "label": "FightList 2",
+      "components": [
+        "fr.two4tea.petitbac/com.two4tea.petitbac.activities.HWMHomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "games_rivvy_monstersurvivors",
+      "label": "Monster Survivors",
+      "components": [
+        "games.rivvy.monstersurvivors/com.google.firebase.MessagingUnityPlayerActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "gov_dukcapil_mobile_id",
+      "label": "Identitas Kependudukan Digital",
+      "components": [
+        "gov.dukcapil.mobile_id/gov.dukcapil.mobile_id.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "gymworkout_gym_gymlog_gymtrainer",
+      "label": "Gym Workout",
+      "components": [
+        "gymworkout.gym.gymlog.gymtrainer/gymworkout.gym.gymlog.gymtrainer.feature.main.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "host_exp_exponent",
+      "label": "Expo Go",
+      "components": [
+        "host.exp.exponent/host.exp.exponent.experience.HomeActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "id_allofresh_ecommerce",
+      "label": "AlloFresh",
+      "components": [
+        "id.allofresh.ecommerce/id.allofresh.ecommerce.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "id_co_ikea_android",
+      "label": "IKEA Indonesia",
+      "components": [
+        "id.co.ikea.android/com.bitbox.ikea.id.indonesia.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "id_dana",
+      "label": "DANA",
+      "components": [
+        "id.dana/id.dana.onboarding.splash.DanaSplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "id_disdukcapilsurabaya_app",
+      "label": "Klampid New Generation",
+      "components": [
+        "id.disdukcapilsurabaya.app/com.zoontek.rnbootsplash.RNBootSplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "id_go_imigrasi_paspor_online",
+      "label": "M - Paspor",
+      "components": [
+        "id.go.imigrasi.paspor_online/id.go.imigrasi.paspor_online.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "id_hsi_edu",
+      "label": "HSI Edu",
+      "components": [
+        "id.hsi.edu/id.hsi.edu.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "id_qoin_korlantas_user",
+      "label": "Digital Korlantas",
+      "components": [
+        "id.qoin.korlantas.user/id.qoin.korlantas.user.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "im_crisp_app",
+      "label": "Crisp",
+      "components": [
+        "im.crisp.app/im.crisp.app.ui.activities.SplashActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "in_startv_hotstar_dplus",
+      "label": "Disney+",
+      "components": [
+        "in.startv.hotstar.dplus/com.hotstar.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "io_gartic_gartic",
+      "label": "Gartic.io",
+      "components": [
+        "io.gartic.Gartic/io.gartic.Gartic.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "io_github_samolego_canta",
+      "label": "Canta",
+      "components": [
+        "io.github.samolego.canta/io.github.samolego.canta.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "kodaforkustom_droidbeauty_pack",
+      "label": "Koda for Kustom",
+      "components": [
+        "kodaforkustom.droidbeauty.pack/dev.jahir.kuper.app.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "mobi_mobileforce_informa",
+      "label": "Informa",
+      "components": [
+        "mobi.mobileforce.informa/com.mobi.mobileforce.informa.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "my_com_maxis_hotlink_production",
+      "label": "Hotlink",
+      "components": [
+        "my.com.maxis.hotlink.production/my.com.maxis.hotlink.RevampMainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "net_froemling_bombsquad",
+      "label": "BombSquad",
+      "components": [
+        "net.froemling.bombsquad/net.froemling.bombsquad.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "net_froemling_bsremote",
+      "label": "BSRemote",
+      "components": [
+        "net.froemling.bsremote/net.froemling.bsremote.ScanActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "nl_appyhapps_healthsync",
+      "label": "Health Sync",
+      "components": [
+        "nl.appyhapps.healthsync/nl.appyhapps.healthsync.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_chromium_webapk_a24a253b78584e7ea_v2",
+      "label": "LibreChat",
+      "components": [
+        "org.chromium.webapk.a24a253b78584e7ea_v2/org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_chromium_webapk_a53f3c06750b482d4_v2",
+      "label": "In-App Subscriptions Made Easy – RevenueCat",
+      "components": [
+        "org.chromium.webapk.a53f3c06750b482d4_v2/org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_chromium_webapk_aed82b3e5ab55cdf2_v2",
+      "label": "omni",
+      "components": [
+        "org.chromium.webapk.aed82b3e5ab55cdf2_v2/org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
       "drawable": "org_chromium_webapk_af4b4e34e3cc4275b_v2",
       "label": "Proyek",
       "components": [
         "org.chromium.webapk.af4b4e34e3cc4275b_v2/org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_kde_kdeconnect_tp",
+      "label": "KDE Connect",
+      "components": [
+        "org.kde.kdeconnect_tp/org.kde.kdeconnect.ui.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_kustom_widget",
+      "label": "KWGT",
+      "components": [
+        "org.kustom.widget/org.kustom.widget.picker.WidgetPicker"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_localsend_localsend_app",
+      "label": "LocalSend",
+      "components": [
+        "org.localsend.localsend_app/org.localsend.localsend_app.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_telegram_messenger",
+      "label": "Telegram",
+      "components": [
+        "org.telegram.messenger/org.telegram.messenger.DefaultIcon"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "org_zwanoo_android_speedtest",
+      "label": "Speedtest",
+      "components": [
+        "org.zwanoo.android.speedtest/com.ookla.mobile4.screens.main.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "ovo_id",
+      "label": "OVO",
+      "components": [
+        "ovo.id/ovo.id.common.activity.StartingActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "sa_edu_ksu_ayat",
+      "label": "Ayat",
+      "components": [
+        "sa.edu.ksu.Ayat/sa.edu.ksu.Ayat.MainActivity"
+      ],
+      "added": "2026-10-09"
+    },
+    {
+      "drawable": "sk_mildev84_agendareminder",
+      "label": "Calendar Widget",
+      "components": [
+        "sk.mildev84.agendareminder/sk.mildev84.agendareminder.ui.activities.SettingsActivityCompose"
       ],
       "added": "2026-10-09"
     }
