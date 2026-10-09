@@ -70,11 +70,11 @@ tail -f ~/.local/state/kudmascot/server.log
 ```
 
 API (bearer token): `POST /api/requests {requests:[{package,activity,label,icon(base64 png)}]}`,
-`GET /api/status`, `GET /api/review`, `POST /api/apps/:drawable/{approve|regenerate|skip|restore}`,
+`GET /api/status`, `GET /api/review`, `POST /api/apps/:drawable/{queue|unqueue|approve|regenerate|skip|restore}`,
 `POST /api/publish`.
 
 Requests dedupe by component (`pkg/activity`). Every activity of a package shares one drawable (`com.whatsapp` →
-`com_whatsapp`). The worker makes 2 variants per request, one at a time (each bridge call uses ChatGPT quota).
+`com_whatsapp`). Phone requests only land in the review page's **Inbox**; nothing is generated until you press **Generate** there (status `requested` → `queued`). The worker makes 2 variants per queued app, one at a time (each bridge call uses ChatGPT quota).
 
 ## Secrets: where they live
 

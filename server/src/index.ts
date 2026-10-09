@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS apps (
   drawable TEXT PRIMARY KEY,
   package TEXT NOT NULL,
   label TEXT NOT NULL,
-  status TEXT NOT NULL,           -- requested | generating | drafted | approved | published | skipped | failed
+  status TEXT NOT NULL,           -- requested (inbox, phone asked) | queued (Hammas pressed Generate) | generating | drafted | approved | published | skipped | failed
   original TEXT,                  -- file name under originals/
   hint TEXT,
   note TEXT,                      -- reviewer note for the pending regeneration
@@ -170,9 +170,9 @@ async function generate(app: App) {
 
 async function workerLoop() {
   // anything left "generating" by a crash goes back in the queue
-  db.query("UPDATE apps SET status='requested' WHERE status='generating'").run();
+  db.query("UPDATE apps SET status='queued' WHERE status='generating'").run();
   for (;;) {
-    const app = db.query("SELECT * FROM apps WHERE status='requested' ORDER BY updated_at LIMIT 1").get() as App | null;
+    const app = db.query("SELECT * FROM apps WHERE status='queued' ORDER BY updated_at LIMIT 1").get() as App | null;
     if (!app) {
       await Bun.sleep(3000);
       continue;
@@ -412,10 +412,32 @@ app.post("/api/apps/:drawable/regenerate", async (c) => {
   const { note, variant, hint } = await c.req.json<{ note?: string; variant?: number; hint?: string }>();
   const d = c.req.param("drawable");
   const r = db
-    .query("UPDATE apps SET status='requested', note=?, note_variant=?, hint=COALESCE(?, hint), error=NULL, updated_at=? WHERE drawable=? AND status!='generating'")
+    .query("UPDATE apps SET status='queued', note=?, note_variant=?, hint=COALESCE(?, hint), error=NULL, updated_at=? WHERE drawable=? AND status!='generating'")
     .run(note?.trim() || null, variant ?? null, hint?.trim() || null, now(), d);
   if (!r.changes) return c.json({ error: "not found or generating" }, 409);
   log("regenerate", d, note ?? "");
+  return c.json({ ok: true });
+});
+
+// Phone requests only land in the inbox ('requested'); nothing generates until Hammas queues it here.
+app.post("/api/apps/:drawable/queue", async (c) => {
+  const { hint } = await c.req.json<{ hint?: string }>().catch(() => ({}) as { hint?: string });
+  const d = c.req.param("drawable");
+  const r = db
+    .query("UPDATE apps SET status='queued', hint=COALESCE(?, hint), error=NULL, updated_at=? WHERE drawable=? AND status IN ('requested','failed','skipped')")
+    .run(hint?.trim() || null, now(), d);
+  if (!r.changes) return c.json({ error: "not in the inbox" }, 409);
+  log("queue", d);
+  return c.json({ ok: true });
+});
+
+app.post("/api/apps/:drawable/unqueue", (c) => {
+  const d = c.req.param("drawable");
+  const has = db.query("SELECT COUNT(*) n FROM variants WHERE drawable=?").get(d) as { n: number };
+  const r = db.query("UPDATE apps SET status=?, note=NULL, note_variant=NULL, updated_at=? WHERE drawable=? AND status='queued'").run(
+    has.n ? "drafted" : "requested", now(), d,
+  );
+  if (!r.changes) return c.json({ error: "not queued" }, 409);
   return c.json({ ok: true });
 });
 

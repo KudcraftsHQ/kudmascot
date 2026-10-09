@@ -20,6 +20,10 @@ button.pri{background:var(--ink);color:#fff}
 button.pri:disabled{opacity:.35}
 button.sec{background:transparent;color:var(--ink)}
 button.ghost{font:inherit;font-size:13px;background:none;border:0;color:var(--muted);text-decoration:underline;padding:6px}
+.search{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card)}
+.inbox{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.row-i{display:grid;grid-template-columns:36px 1fr auto auto auto;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid var(--line)}.row-i:first-child{border-top:0}
+.row-i img{width:36px;height:36px;border-radius:9px}.row-i .t{min-width:0}.row-i .t b{display:block;font-size:14px}.row-i small{display:block;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
 .head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .head img{width:40px;height:40px;border-radius:10px}
@@ -27,7 +31,7 @@ button.ghost{font:inherit;font-size:13px;background:none;border:0;color:var(--mu
 .head b{display:block}
 .head small{color:var(--muted);font-size:12px;word-break:break-all}
 .tag{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--ink);white-space:nowrap}
-.tag.drafted{background:#f1d9a7}.tag.generating,.tag.requested{background:#dfe6ef}.tag.failed{background:#f3c7bb}.tag.approved{background:#cfe5d6}.tag.published{background:#cfe5d6}
+.tag.drafted{background:#f1d9a7}.tag.generating,.tag.requested,.tag.queued{background:#dfe6ef}.tag.failed{background:#f3c7bb}.tag.approved{background:#cfe5d6}.tag.published{background:#cfe5d6}
 .vars{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .var{text-align:center}
 .var img.big{width:100%;aspect-ratio:1;display:block}
@@ -57,7 +61,7 @@ details .vars{grid-template-columns:repeat(4,1fr);margin-top:8px}
 `;
 
 const js = `
-let data=null, tab=localStorage.km_tab||'review', openNote={};
+let data=null, tab=localStorage.km_tab||'inbox', openNote={}, filter='';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(m){const t=$('.toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2600)}
@@ -81,10 +85,10 @@ function shapes(label,src){return '<span class="lbl">'+label+'</span>'+SHAPES.ma
 function frame(src){return src?'<img class="ic orig" src="'+src+'">':''}
 function draftCard(a){
   const latest=a.variants.filter(v=>v.round===a.round), older=a.variants.filter(v=>v.round!==a.round);
-  const busy=a.status==='generating'||a.status==='requested';
+  const busy=a.status==='generating'||a.status==='queued';
   let h='<div class="card" id="c-'+a.drawable+'"><div class="head">'+(a.original?'<img src="'+orig(a)+'">':'')+
     '<div class="t"><b>'+esc(a.label)+'</b><small>'+esc(a.components.join(', ')||a.package)+'</small></div><span class="tag '+a.status+'">'+
-    (a.status==='requested'&&a.note?'regenerating':a.status)+'</span></div>';
+    (a.status==='queued'&&a.note?'regenerating':a.status)+'</span></div>';
   if(latest.length){
     h+='<div class="vars">'+latest.map(v=>'<div class="var'+(a.approved_variant===v.id?' sel':'')+'"><img class="big" loading="lazy" src="'+img(v.png)+'">'+
       '<div class="acts">'+(busy?'':'<button class="pri" onclick="approve(\\''+a.drawable+'\\','+v.id+')">Approve '+v.idx+'</button>'+
@@ -93,7 +97,8 @@ function draftCard(a){
       (a.original?'<span class="lbl">original</span><span></span>'+frame(orig(a))+'<span></span>':'')+
       latest.map(v=>shapes('#'+v.idx,img(v.png))).join('')+'</div>';
   } else if(busy){h+='<div class="empty">'+(a.status==='generating'?'Generating 2 variants (about 10 min)…':'Queued')+'</div>'}
-  if(a.status==='requested'&&a.note)h+='<div class="err" style="color:var(--muted)">Note: '+esc(a.note)+'</div>';
+  if(a.status==='queued')h+='<div class="foot"><button class="ghost" onclick="unqueue(\\''+a.drawable+'\\')">Cancel</button></div>';
+  if(a.status==='queued'&&a.note)h+='<div class="err" style="color:var(--muted)">Note: '+esc(a.note)+'</div>';
   if(a.error)h+='<div class="err">'+esc(a.error.slice(0,300))+'</div>';
   const n=openNote[a.drawable];
   h+='<div class="note'+(n!==undefined?' open':'')+'"><textarea id="n-'+a.drawable+'" placeholder="What should change? e.g. bigger phone glyph, less cream, lean more">'+'</textarea>'+
@@ -109,8 +114,19 @@ function gallery(list,restore){
     return '<div class="g">'+(v?'<img loading="lazy" style="border-radius:34%" src="'+img(v.png)+'">':frame(orig(a)))+'<b>'+esc(a.label)+'</b><small>'+esc(a.status)+'</small>'+
       (restore&&a.status!=='published'?'<button class="ghost" onclick="restore(\\''+a.drawable+'\\')">'+(a.status==='approved'?'unapprove':'restore')+'</button>':'')+'</div>'}).join('')+'</div>';
 }
+function inbox(list){
+  if(!list.length)return '<div class="empty">Inbox is empty. Request icons from the kudmascot app on your phone.</div>';
+  const f=(filter||'').toLowerCase(), shown=list.filter(a=>!f||(a.label+' '+a.package).toLowerCase().includes(f));
+  return '<input class="search" placeholder="Filter '+list.length+' requested apps" value="'+esc(filter)+'" oninput="filter=this.value;render();const i=document.querySelector(\\'.search\\');i.focus();i.setSelectionRange(i.value.length,i.value.length)">'+
+    '<div class="inbox">'+shown.map(a=>'<div class="row-i">'+(a.original?'<img src="'+orig(a)+'">':'<span></span>')+
+    '<div class="t"><b>'+esc(a.label)+'</b><small>'+esc(a.package)+'</small></div>'+
+    '<button class="pri" onclick="queue(\\''+a.drawable+'\\')">Generate</button>'+
+    '<button class="ghost" title="Generate with a hint" onclick="queueHint(\\''+a.drawable+'\\')">…</button>'+
+    '<button class="ghost" onclick="skip(\\''+a.drawable+'\\')">Skip</button></div>').join('')+'</div>';
+}
 function render(){
-  const q=data.apps.filter(a=>['drafted','generating','requested','failed'].includes(a.status));
+  const q=data.apps.filter(a=>['drafted','generating','queued','failed'].includes(a.status));
+  const inb=data.apps.filter(a=>a.status==='requested').sort((x,y)=>x.label.localeCompare(y.label));
   q.sort((x,y)=>(x.status==='drafted'?0:1)-(y.status==='drafted'?0:1));
   const appr=data.apps.filter(a=>a.status==='approved'||a.status==='published');
   const sk=data.apps.filter(a=>a.status==='skipped');
@@ -119,9 +135,9 @@ function render(){
   $('#pub').disabled=data.publishing||(!n&&!nc);
   $('.ci').innerHTML=ci();
   document.querySelectorAll('nav button').forEach(b=>{b.classList.toggle('on',b.dataset.t===tab);
-    b.textContent=b.dataset.l+' '+({review:q.filter(a=>a.status==='drafted').length+'/'+q.length,gallery:appr.length,skipped:sk.length})[b.dataset.t]});
+    b.textContent=b.dataset.l+' '+({inbox:inb.length,review:q.filter(a=>a.status==='drafted').length+'/'+q.length,gallery:appr.length,skipped:sk.length})[b.dataset.t]});
   const keep={};document.querySelectorAll('textarea').forEach(t=>keep[t.id]=t.value);
-  $('main').innerHTML=tab==='review'?(q.length?q.map(draftCard).join(''):'<div class="empty">No drafts waiting. Request icons from the kudmascot app on your phone.</div>')
+  $('main').innerHTML=tab==='inbox'?inbox(inb):tab==='review'?(q.length?q.map(draftCard).join(''):'<div class="empty">Nothing generating or waiting for review. Pick apps to generate from the Inbox.</div>')
     :tab==='gallery'?gallery(appr,true):gallery(sk,true);
   for(const k in keep){const t=document.getElementById(k);if(t)t.value=keep[k]}
 }
@@ -130,6 +146,9 @@ async function approve(d,v){try{await api('/api/apps/'+d+'/approve',{variant:v})
 function noteFor(d,v){openNote[d]=v;render();const t=document.getElementById('n-'+d);t&&t.focus()}
 function closeNote(d){delete openNote[d];render()}
 async function regen(d){const note=document.getElementById('n-'+d).value;try{await api('/api/apps/'+d+'/regenerate',{note,variant:openNote[d]||undefined});delete openNote[d];toast('Queued for regeneration');load()}catch(e){toast(e.message)}}
+async function queue(d,hint){try{await api('/api/apps/'+d+'/queue',{hint});toast('Queued. It will appear under Review');load()}catch(e){toast(e.message)}}
+function queueHint(d){const h=prompt('Hint for the drawing (e.g. "the object is a red gift box")');if(h!==null)queue(d,h)}
+async function unqueue(d){try{await api('/api/apps/'+d+'/unqueue',{});load()}catch(e){toast(e.message)}}
 async function skip(d){if(!confirm('Skip this app?'))return;try{await api('/api/apps/'+d+'/skip',{});load()}catch(e){toast(e.message)}}
 async function restore(d){try{await api('/api/apps/'+d+'/restore',{});load()}catch(e){toast(e.message)}}
 async function publish(){if(!confirm('Commit and push the approved icons? This triggers one CI build.'))return;$('#pub').disabled=true;$('#pub').textContent='Publishing…';
@@ -142,7 +161,7 @@ export function reviewPage() {
 <meta name="theme-color" content="#f6f0e3"><title>kudmascot review</title><style>${css}</style></head><body>
 <header><div class="top"><h1>kudmascot</h1><button id="pub" class="pri" onclick="publish()" disabled>Publish</button></div>
 <div class="ci">…</div>
-<nav><button data-t="review" data-l="Review" onclick="setTab('review')">Review</button><button data-t="gallery" data-l="Approved" onclick="setTab('gallery')">Approved</button><button data-t="skipped" data-l="Skipped" onclick="setTab('skipped')">Skipped</button></nav></header>
+<nav><button data-t="inbox" data-l="Inbox" onclick="setTab('inbox')">Inbox</button><button data-t="review" data-l="Review" onclick="setTab('review')">Review</button><button data-t="gallery" data-l="Approved" onclick="setTab('gallery')">Approved</button><button data-t="skipped" data-l="Skipped" onclick="setTab('skipped')">Skipped</button></nav></header>
 <main><div class="empty">Loading…</div></main><div class="toast"></div><script>${js}</script></body></html>`;
 }
 
